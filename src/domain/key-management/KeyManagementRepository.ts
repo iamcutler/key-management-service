@@ -1,26 +1,28 @@
 import CustomerKey from '../models/key-management/CustomerKey';
 
 export default interface KeyManagementRepository {
+    customerId: string;
     keyStore: any;
 
     /**
      * Create a customer master key alias from a CMK
-     * @param {string} customerId
-     * @param {string} keyId
+     *
+     * @param keyId
      */
-    createKeyAlias(customerId: string, keyId: string) : Promise<void>;
+    createKeyAlias(keyId: string) : Promise<void>;
 
     /**
      * Create a Customer Master Key (CMK)
-     *
-     * @param {string} tenantId
      */
-    createCustomerKey(customerId: string) : Promise<CustomerKey>;
+    createCustomerKey() : Promise<CustomerKey>;
 
     /**
      * Find an existing customer key
-     *
-     * @param customerId
      */
-    findExistingCustomerKey(customerId: string) : Promise<CustomerKey>;
+    findExistingCustomerKey() : Promise<CustomerKey>;
+
+    /**
+     * Get the key alias
+     */
+    getKeyAlias() : string;
 }

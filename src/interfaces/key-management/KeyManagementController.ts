@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express';
-import KeyManagementAWSImpl from '../../domain/key-management/KeyManagementAWSImpl';
+import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepositoryImpl';
 
 export default class KeyManagementController {
     /**
@@ -10,13 +10,13 @@ export default class KeyManagementController {
      * @param next
      */
     static async createCustomerKey(req: Request, res: Response, next: NextFunction) {
-        const keyService = new KeyManagementAWSImpl();
         const customerId = process.env.TENANT_ID || '';
-        const aliasName = `alias/${customerId}`;
+        const keyService = new KeyManagementRepositoryImpl(customerId, 'AWS');
+        const aliasName = keyService.getKeyAlias();
 
         // check if the tenant key already exists
         try {
-            const existingKey = await keyService.findExistingCustomerKey(customerId);
+            const existingKey = await keyService.findExistingCustomerKey();
 
             // return the existing key if found
             return res.json({
@@ -26,9 +26,9 @@ export default class KeyManagementController {
         }
         catch(err) {
             // create a new customer key since one wasn't found
-            const key = await keyService.createCustomerKey(customerId);
+            const key = await keyService.createCustomerKey();
             // create a key alias
-            await keyService.createKeyAlias(customerId, key.keyId);
+            await keyService.createKeyAlias(key.keyId);
 
             res.json({
                 keyId: key.keyId,
