@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import {OK} from 'http-status';
 
 /**
  * Standard JSON response object
@@ -6,7 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 const jsonResponse = () => {
     return (req: Request, res: Response, next: NextFunction) : void => {
 
-        res.jsonResponse = (data: any = null, errors: string[] = [], success: boolean = true, status: number = 200) => {
+        res.jsonResponse = (data: any = null, errors: string[] = [], success: boolean = true, status: number = OK) => {
             return res.status(status).json({ data, errors, success });
         };
 
