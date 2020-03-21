@@ -2,6 +2,8 @@ import {KMS} from 'aws-sdk';
 import KeyManagementRepository from './KeyManagementRepository';
 import CustomerKey from '../models/key-management/CustomerKey';
 import KeyManagementRepositoryAWSImpl from './KeyManagementRepositoryAWSImpl';
+import { KeyManagementProvider } from './KeyManagementProvider';
+import KeyManagementProviderException from '../../exceptions/KeyManagementProviderException';
 
 export default class KeyManagementRepositoryImpl implements KeyManagementRepository {
     customerId: string;
@@ -9,13 +11,18 @@ export default class KeyManagementRepositoryImpl implements KeyManagementReposit
 
     /**
      * @constructor
+     * @param customerId
+     * @param keyStore
      */
-    constructor(customerId: string, keyStore = 'AWS') {
+    constructor(customerId: string, keyStore: KeyManagementProvider) {
         this.customerId = customerId;
 
-        switch(keyStore) {
-            default:
-                this.keyStore = new KeyManagementRepositoryAWSImpl(customerId);
+        // AWS Key Management Service
+        if (keyStore === KeyManagementProvider.KMS) {
+            this.keyStore = new KeyManagementRepositoryAWSImpl(customerId);
+        }
+        else {
+            throw new KeyManagementProviderException(`No cloud provider was present for customer: ${this.customerId}`);
         }
     }
 

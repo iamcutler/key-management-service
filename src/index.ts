@@ -7,14 +7,22 @@ if (!isProduction) {
 }
 
 import express from 'express';
+// controllers
 import HealthController from './interfaces/health/HealthController';
 import KeyManagementController from './interfaces/key-management/KeyManagementController';
+// utils
+import { jsonResponse } from './utils/standardResponses';
+import { appErrorHandler } from './utils/errorHandler';
 
 const app = express();
+
+app.use(jsonResponse());
 
 // Health check
 app.get('/health', HealthController.getHealth);
 app.post('/keys/create', KeyManagementController.createCustomerKey);
+
+app.use(appErrorHandler());
 
 // get the intended port number, use port 3000 if not provided
 const port = process.env.PORT || 3000;

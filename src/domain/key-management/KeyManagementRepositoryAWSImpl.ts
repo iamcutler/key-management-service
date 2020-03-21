@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import {KMS} from 'aws-sdk';
 import KeyManagementRepository from './KeyManagementRepository';
 import CustomerKey from '../models/key-management/CustomerKey';
