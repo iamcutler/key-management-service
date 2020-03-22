@@ -6,3 +6,6 @@
 
 # Typescript output
 /dist
+
+# NPM
+.npmrc

@@ -1,6 +1,10 @@
 import {Request, Response, NextFunction} from 'express';
-import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepositoryImpl';
+import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
+import { Controller, Post, Req, Res, Next, UseFilters } from '@nestjs/common';
+import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
+import { CustomerKeyNotFoundExceptionFilter } from '../../domain/key-management/exceptions/CustomerKeyNotFound/CustomerKeyNotFound.filter';
 
+@Controller('/keys')
 export default class KeyManagementController {
     /**
      * Create a customer custom managed key
@@ -9,38 +13,38 @@ export default class KeyManagementController {
      * @param res
      * @param next
      */
-    static async createCustomerKey(req: Request, res: Response, next: NextFunction) {
-        const customerId = process.env.TENANT_ID || '';
+    @Post('/create')
+    @UseFilters(
+        new KeyManagementProviderExceptionFilter(),
+        new CustomerKeyNotFoundExceptionFilter(),
+    )
+    async createCustomerKey(@Req() req: Request, @Res() res: Response, @Next() next: NextFunction) {
+        const customerId = 'a7517684-73f5-4ab2-a016-a24f0cf9f999';
         const provider: any = req.headers.provider;
 
+        const keyService = new KeyManagementRepositoryImpl(customerId, provider);
+        const aliasName = keyService.getKeyAlias();
+
+        // check if the tenant key already exists
         try {
-            const keyService = new KeyManagementRepositoryImpl(customerId, provider);
-            const aliasName = keyService.getKeyAlias();
+            const {keyId} = await keyService.findExistingCustomerKey();
 
-            // check if the tenant key already exists
-            try {
-                const {keyId} = await keyService.findExistingCustomerKey();
-
-                // return the existing key if found
-                return res.jsonResponse({
-                    keyId,
-                    alias: aliasName
-                });
-            }
-            catch(err) {
-                // create a new customer key since one wasn't found
-                const {keyId} = await keyService.createCustomerKey();
-                // create a key alias
-                await keyService.createKeyAlias(keyId);
-
-                res.jsonResponse({
-                    keyId,
-                    alias: aliasName
-                });
-            }
+            // return the existing key if found
+            return res.jsonResponse({
+                keyId,
+                alias: aliasName
+            });
         }
-        catch (err) {
-            next(err);
+        catch(err) {
+            // create a new customer key since one wasn't found
+            const {keyId} = await keyService.createCustomerKey();
+            // create a key alias
+            await keyService.createKeyAlias(keyId);
+
+            res.jsonResponse({
+                keyId,
+                alias: aliasName
+            });
         }
     }
 }

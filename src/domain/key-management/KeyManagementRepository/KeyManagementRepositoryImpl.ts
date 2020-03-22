@@ -1,9 +1,9 @@
 import {KMS} from 'aws-sdk';
 import KeyManagementRepository from './KeyManagementRepository';
-import CustomerKey from '../models/key-management/CustomerKey';
+import CustomerKey from '../../models/key-management/CustomerKey';
 import KeyManagementRepositoryAWSImpl from './KeyManagementRepositoryAWSImpl';
-import { KeyManagementProvider } from './KeyManagementProvider';
-import KeyManagementProviderException from '../../exceptions/KeyManagementProviderException';
+import { KeyManagementProvider } from '../KeyManagementProvider';
+import KeyManagementProviderException from '../exceptions/KeyManagementProvider/KeyManagementProvider.exception';
 
 export default class KeyManagementRepositoryImpl implements KeyManagementRepository {
     customerId: string;
