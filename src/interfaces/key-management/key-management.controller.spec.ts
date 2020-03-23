@@ -1,10 +1,11 @@
 import { Test } from '@nestjs/testing';
-import { request, response } from 'express';
+import { request } from 'express';
 import KeyManagementController from './key-management.controller';
-import KeyManagementRepositoryImpl from '../../../dist/domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
+import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
 import { KeyManagementProvider } from '../../domain/key-management/KeyManagementProvider';
+import mock from '../../../test/mock';
 
-jest.mock('../../../dist/domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl');
+const { response } = mock();
 
 describe('Controller: Key Management', () => {
     let keyManagementController: KeyManagementController;
@@ -25,26 +26,86 @@ describe('Controller: Key Management', () => {
 
     describe('createCustomerKey', () => {
         // given
-        const customerId = 'testing';
+        const customerId: string = 'testing';
+        const keyId: string = '466477565477456';
 
-        describe.skip('Provider: KMS', () => {
+        describe('Provider: KMS', () => {
             // given
             const provider: KeyManagementProvider = KeyManagementProvider.KMS;
+            const aliasName: string = `alias/${customerId}`;
+
+            request.headers = {
+                provider,
+            };
 
             beforeEach(() => {
-                jest.spyOn(KeyManagementRepositoryImpl.prototype, 'getKeyAlias').mockReturnValue(`alias/${customerId}`);
+                jest.spyOn(KeyManagementRepositoryImpl.prototype, 'getKeyAlias').mockReturnValue(aliasName);
             });
 
-            it('should check and return the customer key if it already exists', async () => {
-                // given
-                jest.spyOn(KeyManagementRepositoryImpl.prototype, 'findExistingCustomerKey').mockRejectedValue({
-                    keyId: '54675675675646534'
+            describe('Existing customer key exists:', () => {
+                beforeEach(() => {
+                    // given
+                    jest.spyOn(KeyManagementRepositoryImpl.prototype, 'findExistingCustomerKey').mockResolvedValue({
+                        keyId,
+                    });
                 });
-                //response.set('provider', provider);
-                // when
-                //await keyManagementController.createCustomerKey(request, response)
-                // then
-                expect(response.send).toHaveBeenCalledWith('OK');
+
+                it('should call the key management implementation to find the existing key', async () => {
+                    // given
+                    // when
+                    await keyManagementController.createCustomerKey(request, response);
+                    // then
+                    expect(KeyManagementRepositoryImpl.prototype.findExistingCustomerKey).toHaveBeenCalled();
+                });
+
+                it('should return the customer key and alias', async () => {
+                    // given
+                    // when
+                    await keyManagementController.createCustomerKey(request, response);
+                    // then
+                    expect(response.jsonResponse).toHaveBeenCalledWith({
+                        keyId,
+                        alias: aliasName,
+                    });
+                });
+            });
+
+            describe('New customer key generated:', () => {
+                beforeEach(() => {
+                    // given
+                    jest.spyOn(KeyManagementRepositoryImpl.prototype, 'findExistingCustomerKey').mockRejectedValue({});
+                    jest.spyOn(KeyManagementRepositoryImpl.prototype, 'createCustomerKey').mockResolvedValue({
+                        keyId
+                    });
+                    jest.spyOn(KeyManagementRepositoryImpl.prototype, 'createKeyAlias').mockResolvedValue(null);
+                });
+
+                it('should call the implementation to create a customer key', async () => {
+                    // given
+                    // when
+                    await keyManagementController.createCustomerKey(request, response);
+                    // then
+                    expect(KeyManagementRepositoryImpl.prototype.createCustomerKey).toHaveBeenCalledWith();
+                });
+
+                it('should call the implementation to create a key alias from the new key', async () => {
+                    // given
+                    // when
+                    await keyManagementController.createCustomerKey(request, response);
+                    // then
+                    expect(KeyManagementRepositoryImpl.prototype.createKeyAlias).toHaveBeenCalledWith(keyId);
+                });
+
+                it('should return the new customer key and alias', async () => {
+                    // given
+                    // when
+                    await keyManagementController.createCustomerKey(request, response);
+                    // then
+                    expect(response.jsonResponse).toHaveBeenCalledWith({
+                        keyId,
+                        alias: aliasName,
+                    });
+                });
             });
         });
     });

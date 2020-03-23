@@ -12,9 +12,11 @@ RUN npm install --only=development
 COPY . .
 # Build the application
 RUN npm run build
+# Run unit tests
+RUN npm test
 
 # ---------------------------------
-# Development
+# Production
 # ---------------------------------
 FROM node:12.16-alpine as production
 

@@ -70,8 +70,6 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
     /**
      * Get the key alias
      * @description The KMS alias must start with alias/
-     *
-     * @param customerId
      */
     getKeyAlias() : string {
         return `alias/${this.customerId}`;

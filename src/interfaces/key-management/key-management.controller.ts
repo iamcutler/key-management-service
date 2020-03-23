@@ -1,6 +1,6 @@
-import {Request, Response, NextFunction} from 'express';
+import {Request as expressRequest, Response as expressResponse, NextFunction} from 'express';
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
-import { Controller, Post, Req, Res, Next, UseFilters } from '@nestjs/common';
+import { Controller, Post, Request, Response, Next, UseFilters } from '@nestjs/common';
 import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
 import { CustomerKeyNotFoundExceptionFilter } from '../../domain/key-management/exceptions/CustomerKeyNotFound/CustomerKeyNotFound.filter';
 
@@ -18,7 +18,7 @@ export default class KeyManagementController {
         new KeyManagementProviderExceptionFilter(),
         new CustomerKeyNotFoundExceptionFilter(),
     )
-    async createCustomerKey(@Req() req: Request, @Res() res: Response) {
+    async createCustomerKey(@Request() req: expressRequest, @Response() res: expressResponse) {
         const customerId = 'a7517684-73f5-4ab2-a016-a24f0cf9f999';
         const provider: any = req.headers.provider;
 
