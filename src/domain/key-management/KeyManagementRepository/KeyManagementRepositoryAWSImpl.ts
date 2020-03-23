@@ -1,7 +1,7 @@
 import {KMS} from 'aws-sdk';
 import KeyManagementRepository from './KeyManagementRepository';
 import CustomerKey from '../../models/key-management/CustomerKey';
-import CustomerKeyNotFound from '../exceptions/CustomerKeyNotFound/CustomerKeyNotFound.exception';
+import CustomerKeyNotFoundException from '../exceptions/CustomerKeyNotFound/CustomerKeyNotFound.exception';
 
 export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepository {
     customerId: string;
@@ -47,7 +47,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
             };
         }
 
-        throw new CustomerKeyNotFound(`Creating customer key failed for customer: ${this.customerId}`);
+        throw new CustomerKeyNotFoundException(`Creating customer key failed for customer: ${this.customerId}`);
     }
 
     /**
@@ -64,7 +64,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
             };
         }
 
-        throw new CustomerKeyNotFound(`Finding customer key failed for customer: ${this.customerId}`);
+        throw new CustomerKeyNotFoundException(`Finding customer key failed for customer: ${this.customerId}`);
     }
 
     /**

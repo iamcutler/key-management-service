@@ -18,7 +18,7 @@ export default class KeyManagementController {
         new KeyManagementProviderExceptionFilter(),
         new CustomerKeyNotFoundExceptionFilter(),
     )
-    async createCustomerKey(@Req() req: Request, @Res() res: Response, @Next() next: NextFunction) {
+    async createCustomerKey(@Req() req: Request, @Res() res: Response) {
         const customerId = 'a7517684-73f5-4ab2-a016-a24f0cf9f999';
         const provider: any = req.headers.provider;
 

@@ -9,3 +9,6 @@
 
 # NPM
 .npmrc
+
+# Testing coverage report(s)
+coverage/
