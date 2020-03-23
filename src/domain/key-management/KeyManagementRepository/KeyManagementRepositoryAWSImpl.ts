@@ -1,7 +1,7 @@
 import {KMS} from 'aws-sdk';
 import KeyManagementRepository from './KeyManagementRepository';
-import CustomerKey from '../models/key-management/CustomerKey';
-import CustomerKeyNotFound from '../../exceptions/CustomerKeyNotFound';
+import CustomerKey from '../../models/key-management/CustomerKey';
+import CustomerKeyNotFoundException from '../exceptions/CustomerKeyNotFound/CustomerKeyNotFound.exception';
 
 export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepository {
     customerId: string;
@@ -14,8 +14,8 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
         this.customerId = customerId;
         this.keyStore = new KMS({
             region: 'us-east-2',
-            accessKeyId: 'AKIAICXPBE3QFSJ7DP2Q',
-            secretAccessKey: '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'
+            accessKeyId: '',
+            secretAccessKey: ''
         });
     }
 
@@ -47,7 +47,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
             };
         }
 
-        throw new CustomerKeyNotFound(`Creating customer key failed for customer: ${this.customerId}`);
+        throw new CustomerKeyNotFoundException(`Creating customer key failed for customer: ${this.customerId}`);
     }
 
     /**
@@ -64,14 +64,12 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
             };
         }
 
-        throw new CustomerKeyNotFound(`Finding customer key failed for customer: ${this.customerId}`);
+        throw new CustomerKeyNotFoundException(`Finding customer key failed for customer: ${this.customerId}`);
     }
 
     /**
      * Get the key alias
      * @description The KMS alias must start with alias/
-     *
-     * @param customerId
      */
     getKeyAlias() : string {
         return `alias/${this.customerId}`;

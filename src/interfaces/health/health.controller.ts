@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 
+@Controller('/health')
 export default class HealthController {
 
     /**
@@ -9,7 +11,8 @@ export default class HealthController {
      * @param res
      * @param next
      */
-    static async getHealth(req: Request, res: Response) {
+    @Get()
+    getHealth(@Req() req: Request, @Res() res: Response) {
         res.send('OK');
     }
 }
