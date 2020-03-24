@@ -8,7 +8,7 @@ image: node:12.16.1
 definitions:
   services:
     docker:
-      memory: 7128
+      memory: 5120
   steps:
     - step: &build-and-test
         name: 'Build & Test'
