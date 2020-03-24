@@ -8,16 +8,30 @@ image: node:12.16.1
 pipelines:
   default:
     - step:
+        size: 2x # Double resources available for this step.
+        services:
+          - docker
         caches:
           - node
         script: # Modify the commands below to build your repository.
           # build the image
           - docker build -t key-management-service .
 
-          # use the pipe to push the image to AWS ECR
-          - pipe: atlassian/aws-ecr-push-image:1.1.1
-            variables:
-              AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-              AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-              AWS_DEFAULT_REGION: $AWS_REGION
-              IMAGE_NAME: key-management-service
+  branches:
+    # Step to run with pushing to master
+    master:
+      - step:
+          name: 'Push docker image to ECR'
+          script:
+            # use the pipe to push the image to AWS ECR
+            - pipe: atlassian/aws-ecr-push-image:1.1.1
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                AWS_DEFAULT_REGION: $AWS_REGION
+                IMAGE_NAME: key-management-service
+
+definitions:
+  services:
+    docker:
+      memory: 1024
