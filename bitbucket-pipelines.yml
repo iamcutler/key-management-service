@@ -24,6 +24,9 @@ definitions:
         name: 'Push docker image to ECR'
         size: 2x
         script:
+          # build the image (This is needed to push via the pipe as the first step)
+          - docker build -t key-management-service .
+
           # use the pipe to push the image to AWS ECR
           - pipe: atlassian/aws-ecr-push-image:1.1.1
             variables:
@@ -40,5 +43,4 @@ pipelines:
   branches:
     # Step to run with pushing to master
     master:
-      - step: *build-and-test
       - step: *publish
