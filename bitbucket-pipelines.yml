@@ -17,19 +17,19 @@ pipelines:
           # build the image
           - docker build -t key-management-service .
 
-  branches:
+  #branches:
     # Step to run with pushing to master
-    master:
-      - step:
-          name: 'Push docker image to ECR'
-          script:
+    #master:
+      #- step:
+          #name: 'Push docker image to ECR'
+          #script:
             # use the pipe to push the image to AWS ECR
-            - pipe: atlassian/aws-ecr-push-image:1.1.1
-              variables:
-                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-                AWS_DEFAULT_REGION: $AWS_REGION
-                IMAGE_NAME: key-management-service
+            #- pipe: atlassian/aws-ecr-push-image:1.1.1
+              #variables:
+                #AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                #AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                #AWS_DEFAULT_REGION: $AWS_REGION
+                #IMAGE_NAME: key-management-service
 
 definitions:
   services:
