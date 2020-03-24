@@ -31,6 +31,8 @@ definitions:
               AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
               AWS_DEFAULT_REGION: $AWS_REGION
               IMAGE_NAME: "key-management-service"
+              TAGS: "latest"
+              DEBUG: true
 
 pipelines:
   default:
