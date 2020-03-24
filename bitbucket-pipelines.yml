@@ -21,7 +21,7 @@ definitions:
           # build the image
           - docker build -t key-management-service .
     - step: &publish
-        name: 'Push docker image to ECR'
+        name: 'Build and publish to ECR'
         size: 2x
         script:
           # build the image (This is needed to push via the pipe as the first step)
