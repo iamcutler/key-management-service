@@ -13,7 +13,7 @@ export default class KeyManagementController {
      * @param res
      * @param next
      */
-    @Post('/create')
+    @Post('/')
     @UseFilters(
         new KeyManagementProviderExceptionFilter(),
         new CustomerKeyNotFoundExceptionFilter(),

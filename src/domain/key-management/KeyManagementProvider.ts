@@ -1,3 +1,3 @@
 export enum KeyManagementProvider {
-    KMS = 'KMS'
+    AWS = 'AWS'
 };

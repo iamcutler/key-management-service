@@ -18,7 +18,7 @@ export default class KeyManagementRepositoryImpl implements KeyManagementReposit
         this.customerId = customerId;
 
         // AWS Key Management Service
-        if (keyStore === KeyManagementProvider.KMS) {
+        if (keyStore === KeyManagementProvider.AWS) {
             this.keyStore = new KeyManagementRepositoryAWSImpl(customerId);
         }
         else {
