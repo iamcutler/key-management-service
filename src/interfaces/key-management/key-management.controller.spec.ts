@@ -31,7 +31,7 @@ describe('Controller: Key Management', () => {
 
         describe('Provider: KMS', () => {
             // given
-            const provider: KeyManagementProvider = KeyManagementProvider.KMS;
+            const provider: KeyManagementProvider = KeyManagementProvider.AWS;
             const aliasName: string = `alias/${customerId}`;
 
             request.headers = {

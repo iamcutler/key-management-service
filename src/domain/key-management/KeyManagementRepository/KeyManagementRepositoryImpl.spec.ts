@@ -13,9 +13,9 @@ describe('KeyManagementRepositoryImpl', () => {
         jest.clearAllMocks();
     });
 
-    describe('Provider: KMS', () => {
+    describe('Provider: AWS', () => {
         // given
-        const provider = KeyManagementProvider.KMS;
+        const provider = KeyManagementProvider.AWS;
         const keyManagementImpl: KeyManagementRepositoryImpl = new KeyManagementRepositoryImpl(customerId, provider);
 
         it('should init the AWS/KMS implementation', () => {
