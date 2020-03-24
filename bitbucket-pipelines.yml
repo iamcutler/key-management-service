@@ -30,7 +30,7 @@ definitions:
               AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
               AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
               AWS_DEFAULT_REGION: $AWS_REGION
-              IMAGE_NAME: key-management-service
+              IMAGE_NAME: "453519300794.dkr.ecr.${AWS_REGION}.amazonaws.com/key-management-service"
 
 pipelines:
   default:
