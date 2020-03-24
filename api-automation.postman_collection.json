@@ -41,12 +41,11 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "http://localhost:3000/health",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}/health",
+							"protocol": "{{protocol}}",
 							"host": [
-								"localhost"
+								"{{host}}"
 							],
-							"port": "3000",
 							"path": [
 								"health"
 							]
@@ -105,12 +104,11 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "http://localhost:3000/keys",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{host}}/keys",
+									"protocol": "{{protocol}}",
 									"host": [
-										"localhost"
+										"{{host}}"
 									],
-									"port": "3000",
 									"path": [
 										"keys"
 									]
@@ -159,12 +157,11 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "http://localhost:3000/keys",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{host}}/keys",
+							"protocol": "{{protocol}}",
 							"host": [
-								"localhost"
+								"{{host}}"
 							],
-							"port": "3000",
 							"path": [
 								"keys"
 							]
