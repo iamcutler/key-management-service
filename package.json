@@ -27,7 +27,6 @@
     "aws-sdk": "^2.643.0",
     "http-status": "^1.4.2",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2",
     "rxjs": "^6.5.4"
   },
   "devDependencies": {
@@ -45,6 +44,7 @@
     "eslint-plugin-import": "^2.20.1",
     "jest": "^25.1.0",
     "prettier": "^1.19.1",
+    "rimraf": "^3.0.2",
     "supertest": "^4.0.2",
     "ts-jest": "25.2.1",
     "ts-loader": "^6.2.1",
