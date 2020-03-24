@@ -8,7 +8,7 @@ image: node:12.16.1
 definitions:
   services:
     docker:
-      memory: 5120
+      memory: 4096
   steps:
     - step: &build-and-test
         name: 'Build & Test'
@@ -22,6 +22,7 @@ definitions:
           - docker build -t key-management-service .
     - step: &publish
         name: 'Push docker image to ECR'
+        size: 2x
         script:
           # use the pipe to push the image to AWS ECR
           - pipe: atlassian/aws-ecr-push-image:1.1.1
