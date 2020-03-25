@@ -1,8 +1,9 @@
 import {Request as expressRequest, Response as expressResponse, NextFunction} from 'express';
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
-import { Controller, Post, Request, Response, Next, UseFilters } from '@nestjs/common';
+import { Controller, Post, Request, Response, UseFilters } from '@nestjs/common';
 import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
 import { CustomerKeyNotFoundExceptionFilter } from '../../domain/key-management/exceptions/CustomerKeyNotFound/CustomerKeyNotFound.filter';
+import { IncomingHttpHeaders } from 'http';
 
 @Controller('/keys')
 export default class KeyManagementController {
@@ -11,7 +12,6 @@ export default class KeyManagementController {
      *
      * @param req
      * @param res
-     * @param next
      */
     @Post('/')
     @UseFilters(
@@ -19,10 +19,10 @@ export default class KeyManagementController {
         new CustomerKeyNotFoundExceptionFilter(),
     )
     async createCustomerKey(@Request() req: expressRequest, @Response() res: expressResponse) {
-        const customerId = 'a7517684-73f5-4ab2-a016-a24f0cf9f999';
-        const provider: any = req.headers.provider;
+        const headers: IncomingHttpHeaders = req.headers;
+        const provider: any = headers.provider;
 
-        const keyService = new KeyManagementRepositoryImpl(customerId, provider);
+        const keyService = new KeyManagementRepositoryImpl(req.tenantId, provider);
         const aliasName = keyService.getKeyAlias();
 
         // check if the tenant key already exists

@@ -1,4 +1,4 @@
-import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import KeyManagementProviderException from './KeyManagementProvider.exception';
 
@@ -8,6 +8,8 @@ export class KeyManagementProviderExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
+
+    Logger.error(exception);
 
     response.jsonResponse(null, [exception.message], false, status);
   }

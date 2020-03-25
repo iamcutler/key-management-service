@@ -1,5 +1,3 @@
-import { Request, Response } from 'express';
-
 export default () : any => ({
   hostContext: {
     switchToHttp: jest.fn().mockReturnThis(),
@@ -10,7 +8,10 @@ export default () : any => ({
   Logger: {
     error: jest.fn()
   },
+  request: {
+    headers: {}
+  },
   response: {
     jsonResponse: jest.fn()
-  }
+  },
 });
