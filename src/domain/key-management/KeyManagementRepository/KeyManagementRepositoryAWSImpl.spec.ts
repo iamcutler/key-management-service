@@ -237,7 +237,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                             "Resource": "*",
                             "Condition": {
                                 "StringEquals": {
-                                    "aws:PrincipalTag/tenantid": `${tenantId}`
+                                    "aws:PrincipalTag/tenantId": `${tenantId}`
                                 }
                             }
                         }

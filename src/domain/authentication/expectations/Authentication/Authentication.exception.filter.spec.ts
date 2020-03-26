@@ -14,7 +14,7 @@ describe('Exception Filter: AuthenticationExceptionFilter', () => {
         jest.spyOn(Logger, 'error').mockImplementation(() => Logger.error);
     });
 
-    it('should catch a AuthTokenException and return the expected response', () => {
+    it('should catch a AuthenticationException and return the expected response', () => {
         // given
         const exception: AuthenticationException = new AuthenticationException('Authentication failed');
         // when

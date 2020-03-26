@@ -164,8 +164,8 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
                         ],
                         "Resource": "*",
                         "Condition": {
-                            "StringEquals": {
-                                "aws:PrincipalTag/tenantid": `${tenantId}`
+                            "StringNotEquals": {
+                                "ec2:ResourceTag/tenantId": `${tenantId}`
                             }
                         }
                     }

@@ -13,7 +13,6 @@ import { AuthService } from './services/auth/auth.service';
         AuthService,
     ],
 })
-
 export default class AuthModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
