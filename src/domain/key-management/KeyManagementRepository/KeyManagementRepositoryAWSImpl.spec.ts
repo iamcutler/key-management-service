@@ -4,12 +4,22 @@ import CustomerKeyNotFoundException from '../exceptions/CustomerKeyNotFound/Cust
 const createAlias = jest.fn();
 const createKey = jest.fn();
 const describeKey = jest.fn();
+const putKeyPolicy = jest.fn();
+const getCallerIdentity = jest.fn().mockImplementation(() => ({
+    promise() {
+        return Promise.resolve({});
+    }
+}));
 
 jest.mock('aws-sdk', () => ({
     KMS: jest.fn(() => ({
         createAlias,
         createKey,
-        describeKey
+        describeKey,
+        putKeyPolicy,
+    })),
+    STS: jest.fn(() => ({
+        getCallerIdentity,
     }))
 }));
 
@@ -56,7 +66,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
         // given
         const keyId = '567756867645645';
 
-        it('should call KMS with the expected payload', async () => {
+        it('should call KMS to create the key with the expected payload', async () => {
             // given
             createKey.mockImplementation(() => ({
                 promise() {
@@ -68,7 +78,11 @@ describe('KeyManagementRepositoryAWSImpl', () => {
             await keyManagement.createCustomerKey();
             // then
             expect(createKey).toHaveBeenCalledWith({
-                Origin: 'AWS_KMS'
+                Origin: 'AWS_KMS',
+                Tags: [{
+                    TagKey: 'tenantid',
+                    TagValue: customerId,
+                }],
             });
         });
 
@@ -155,6 +169,82 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                 // then
                 expect(err).toBeInstanceOf(CustomerKeyNotFoundException);
             }
+        });
+    });
+
+    describe('setKeyPolicy', () => {
+        it('should update the key policy for a targeted CMK', async () => {
+            // given
+            const keyId: string = '65775675685746456';
+            const accountId: string = '45456756456';
+            putKeyPolicy.mockImplementation((): void => null);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(customerId);
+            // when
+            await keyManagement.setKeyPolicy(keyId, accountId, customerId);
+            // then
+            expect(putKeyPolicy).toHaveBeenCalledWith({
+                KeyId: keyId,
+                Policy: JSON.stringify({
+                    "Version": "2012-10-17",
+                    "Id": `key-policy-${customerId}`,
+                    "Statement": [
+                        {
+                            "Sid": "Enable IAM User Permissions",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": `arn:aws:iam::${accountId}:root`
+                            },
+                            "Action": "kms:*",
+                            "Resource": "*"
+                        },
+                        {
+                            "Sid": "Allow access for Key Administrators",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": `arn:aws:iam::${accountId}:role/iqbot-key-admin`
+                            },
+                            "Action": [
+                                "kms:Describe*",
+                                "kms:Put*",
+                                "kms:Create*",
+                                "kms:Update*",
+                                "kms:Enable*",
+                                "kms:Revoke*",
+                                "kms:List*",
+                                "kms:Disable*",
+                                "kms:Get*",
+                                "kms:Delete*",
+                                "kms:ScheduleKeyDeletion",
+                                "kms:CancelKeyDeletion"
+                            ],
+                            "Resource": "*"
+                        },
+                        {
+                            "Sid": "Allow use of the key",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": `arn:aws:iam::${accountId}:role/iqbot-app`
+                            },
+                            "Action": [
+                                "kms:Create*",
+                                "kms:PutKeyPolicy",
+                                "kms:DescribeKey",
+                                "kms:GenerateDataKey*",
+                                "kms:Encrypt",
+                                "kms:ReEncrypt*",
+                                "kms:Decrypt"
+                            ],
+                            "Resource": "*",
+                            "Condition": {
+                                "StringEquals": {
+                                    "aws:PrincipalTag/tenantid": `${customerId}`
+                                }
+                            }
+                        }
+                    ]
+                }),
+                PolicyName: 'default'
+            });
         });
     });
 });
