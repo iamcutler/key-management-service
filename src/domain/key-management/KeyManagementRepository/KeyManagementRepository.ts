@@ -1,7 +1,7 @@
 import CustomerKey from '../../models/key-management/CustomerKey';
 
 export default interface KeyManagementRepository {
-    customerId: string;
+    tenantId: string;
     keyStore: any;
 
     /**

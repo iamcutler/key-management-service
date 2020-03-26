@@ -25,7 +25,7 @@ jest.mock('aws-sdk', () => ({
 
 describe('KeyManagementRepositoryAWSImpl', () => {
     // given
-    const customerId = '567567756756645456456';
+    const tenantId = '567567756756645456456';
 
     afterEach(() => {
         jest.clearAllMocks();
@@ -40,7 +40,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({});
                 }
             }));
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             await keyManagement.createKeyAlias(keyId);
             // then
@@ -54,11 +54,11 @@ describe('KeyManagementRepositoryAWSImpl', () => {
     describe('getKeyAlias', () => {
         it('should return the current key and schema', () => {
             // given
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             const result = keyManagement.getKeyAlias();
             // then
-            expect(result).toEqual(`alias/${customerId}`);
+            expect(result).toEqual(`alias/${tenantId}`);
         });
     });
 
@@ -73,7 +73,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({ KeyMetadata: { KeyId: keyId } });
                 }
             }));
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             await keyManagement.createCustomerKey();
             // then
@@ -81,7 +81,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                 Origin: 'AWS_KMS',
                 Tags: [{
                     TagKey: 'tenantid',
-                    TagValue: customerId,
+                    TagValue: tenantId,
                 }],
             });
         });
@@ -93,7 +93,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({ KeyMetadata: { KeyId: keyId } });
                 }
             }));
-            const keyManagement = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             const result = await keyManagement.createCustomerKey();
             // then
@@ -107,7 +107,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve(null);
                 }
             }));
-            const keyManagement = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             try {
                 await keyManagement.createCustomerKey();
@@ -130,7 +130,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({ KeyMetadata: { KeyId: keyId } });
                 }
             }));
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             await keyManagement.findExistingCustomerKey();
             // then
@@ -146,7 +146,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({ KeyMetadata: { KeyId: keyId } });
                 }
             }));
-            const keyManagement = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             const result = await keyManagement.findExistingCustomerKey();
             // then
@@ -160,7 +160,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve(null);
                 }
             }));
-            const keyManagement = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             try {
                 await keyManagement.findExistingCustomerKey();
@@ -178,15 +178,15 @@ describe('KeyManagementRepositoryAWSImpl', () => {
             const keyId: string = '65775675685746456';
             const accountId: string = '45456756456';
             putKeyPolicy.mockImplementation((): void => null);
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(customerId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
-            await keyManagement.setKeyPolicy(keyId, accountId, customerId);
+            await keyManagement.setKeyPolicy(keyId, accountId, tenantId);
             // then
             expect(putKeyPolicy).toHaveBeenCalledWith({
                 KeyId: keyId,
                 Policy: JSON.stringify({
                     "Version": "2012-10-17",
-                    "Id": `key-policy-${customerId}`,
+                    "Id": `key-policy-${tenantId}`,
                     "Statement": [
                         {
                             "Sid": "Enable IAM User Permissions",
@@ -237,7 +237,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                             "Resource": "*",
                             "Condition": {
                                 "StringEquals": {
-                                    "aws:PrincipalTag/tenantid": `${customerId}`
+                                    "aws:PrincipalTag/tenantid": `${tenantId}`
                                 }
                             }
                         }

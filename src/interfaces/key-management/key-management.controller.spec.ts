@@ -26,13 +26,13 @@ describe('Controller: Key Management', () => {
 
     describe('createCustomerKey', () => {
         // given
-        const customerId: string = 'testing';
+        const tenantId: string = 'testing';
         const keyId: string = '466477565477456';
 
         describe('Provider: KMS', () => {
             // given
             const provider: KeyManagementProvider = KeyManagementProvider.AWS;
-            const aliasName: string = `alias/${customerId}`;
+            const aliasName: string = `alias/${tenantId}`;
 
             request.headers = {
                 provider,

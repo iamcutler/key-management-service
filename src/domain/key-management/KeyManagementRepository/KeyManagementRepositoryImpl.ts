@@ -6,23 +6,23 @@ import { KeyManagementProvider } from '../KeyManagementProvider';
 import KeyManagementProviderException from '../exceptions/KeyManagementProvider/KeyManagementProvider.exception';
 
 export default class KeyManagementRepositoryImpl implements KeyManagementRepository {
-    customerId: string;
+    tenantId: string;
     keyStore: any;
 
     /**
      * @constructor
-     * @param customerId
+     * @param tenantId
      * @param keyStore
      */
-    constructor(customerId: string, keyStore: KeyManagementProvider) {
-        this.customerId = customerId;
+    constructor(tenantId: string, keyStore: KeyManagementProvider) {
+        this.tenantId = tenantId;
 
         // AWS Key Management Service
         if (keyStore === KeyManagementProvider.AWS) {
-            this.keyStore = new KeyManagementRepositoryAWSImpl(customerId);
+            this.keyStore = new KeyManagementRepositoryAWSImpl(tenantId);
         }
         else {
-            throw new KeyManagementProviderException(`No cloud provider was present for customer: ${this.customerId}`);
+            throw new KeyManagementProviderException(`No cloud provider was present for customer: ${this.tenantId}`);
         }
     }
 

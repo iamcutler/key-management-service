@@ -5,14 +5,14 @@ import CustomerKeyNotFoundException from '../exceptions/CustomerKeyNotFound/Cust
 import { GetCallerIdentityResponse } from 'aws-sdk/clients/sts';
 
 export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepository {
-    customerId: string;
+    tenantId: string;
     keyStore: KMS;
 
     /**
      * @constructor
      */
-    constructor(customerId: string) {
-        this.customerId = customerId;
+    constructor(tenantId: string) {
+        this.tenantId = tenantId;
         this.keyStore = new KMS({
             region: 'us-east-2',
             accessKeyId: '',
@@ -46,7 +46,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
             Origin: 'AWS_KMS',
             Tags: [{
                 TagKey: 'tenantid',
-                TagValue: this.customerId
+                TagValue: this.tenantId
             }]
         }).promise();
 
@@ -54,14 +54,14 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
             const keyId = key.KeyMetadata.KeyId;
 
             // generate the key policy for the new key
-            await this.setKeyPolicy(keyId, accountId, this.customerId);
+            await this.setKeyPolicy(keyId, accountId, this.tenantId);
 
             return {
                 keyId,
             };
         }
 
-        throw new CustomerKeyNotFoundException(`Creating customer key failed for customer: ${this.customerId}`);
+        throw new CustomerKeyNotFoundException(`Creating customer key failed for customer: ${this.tenantId}`);
     }
 
     /**
@@ -78,7 +78,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
             };
         }
 
-        throw new CustomerKeyNotFoundException(`Finding customer key failed for customer: ${this.customerId}`);
+        throw new CustomerKeyNotFoundException(`Finding customer key failed for customer: ${this.tenantId}`);
     }
 
     /**
@@ -86,7 +86,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
      * @description The KMS alias must start with alias/
      */
     getKeyAlias() : string {
-        return `alias/${this.customerId}`;
+        return `alias/${this.tenantId}`;
     }
 
     /**
@@ -107,14 +107,14 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
      *
      * @param keyId
      * @param accountId 
-     * @param customerId 
+     * @param tenantId 
      */
-    async setKeyPolicy(keyId: string, accountId: string, customerId: string) {
+    async setKeyPolicy(keyId: string, accountId: string, tenantId: string) {
         const params = {
             KeyId: keyId,
             Policy: JSON.stringify({
                 "Version": "2012-10-17",
-                "Id": `key-policy-${customerId}`,
+                "Id": `key-policy-${tenantId}`,
                 "Statement": [
                     {
                         "Sid": "Enable IAM User Permissions",
@@ -165,7 +165,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
                         "Resource": "*",
                         "Condition": {
                             "StringEquals": {
-                                "aws:PrincipalTag/tenantid": `${customerId}`
+                                "aws:PrincipalTag/tenantid": `${tenantId}`
                             }
                         }
                     }

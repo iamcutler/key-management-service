@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { IncomingHttpHeaders } from 'http';
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware, UseFilters } from '@nestjs/common';
 import AuthTokenException from '../expectations/AuthTokenException/AuthToken.exception';
 import { AuthService } from '../services/auth/auth.service';
+import { AuthenticationExceptionFilter } from '../expectations/Authentication/Authentication.exception.filter';
 
 /**
  * Validate the JWT Bearer token is present on the request
@@ -12,6 +13,7 @@ import { AuthService } from '../services/auth/auth.service';
  * @param next
  */
 @Injectable()
+@UseFilters(new AuthenticationExceptionFilter())
 export class AuthorizationMiddleware implements NestMiddleware {
    constructor(private readonly authService: AuthService) {}
 
@@ -27,6 +29,9 @@ export class AuthorizationMiddleware implements NestMiddleware {
       const tokenContent = this.authService.getContentFromAuthToken(token);
       req.token = tokenContent;
       req.tenantId = tokenContent['tenantUuid'];
+
+      // call CR to authenticate via the JWT token
+      await this.authService.authenticateByToken(tokenContent['tenantUuid'], token);
 
       next();
    }

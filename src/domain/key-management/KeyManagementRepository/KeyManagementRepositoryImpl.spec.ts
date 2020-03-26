@@ -7,7 +7,7 @@ jest.mock('./KeyManagementRepositoryAWSImpl');
 
 describe('KeyManagementRepositoryImpl', () => {
     // given
-    const customerId = '567567756756645456456';
+    const tenantId = '567567756756645456456';
 
     afterEach(() => {
         jest.clearAllMocks();
@@ -16,13 +16,13 @@ describe('KeyManagementRepositoryImpl', () => {
     describe('Provider: AWS', () => {
         // given
         const provider = KeyManagementProvider.AWS;
-        const keyManagementImpl: KeyManagementRepositoryImpl = new KeyManagementRepositoryImpl(customerId, provider);
+        const keyManagementImpl: KeyManagementRepositoryImpl = new KeyManagementRepositoryImpl(tenantId, provider);
 
         it('should init the AWS/KMS implementation', () => {
             // given
             // when
             // then
-            expect(KeyManagementRepositoryAWSImpl).toHaveBeenCalledWith(customerId);
+            expect(KeyManagementRepositoryAWSImpl).toHaveBeenCalledWith(tenantId);
         });
 
         describe('createKeyAlias', () => {
