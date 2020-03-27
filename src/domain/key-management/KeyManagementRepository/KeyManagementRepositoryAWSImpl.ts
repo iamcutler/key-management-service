@@ -149,7 +149,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
                     },
                     {
                         "Sid": "Allow use of the key",
-                        "Effect": "Allow",
+                        "Effect": "Deny",
                         "Principal": {
                             "AWS": `arn:aws:iam::${accountId}:role/iqbot-app`
                         },
