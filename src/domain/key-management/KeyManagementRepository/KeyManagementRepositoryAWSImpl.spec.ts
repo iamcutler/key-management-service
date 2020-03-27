@@ -4,7 +4,9 @@ import CustomerKeyNotFoundException from '../exceptions/CustomerKeyNotFound/Cust
 const createAlias = jest.fn();
 const createKey = jest.fn();
 const describeKey = jest.fn();
-const putKeyPolicy = jest.fn();
+const putKeyPolicy = jest.fn().mockImplementation(() => ({
+    promise: jest.fn()
+}));
 const getCallerIdentity = jest.fn().mockImplementation(() => ({
     promise() {
         return Promise.resolve({});
@@ -80,7 +82,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
             expect(createKey).toHaveBeenCalledWith({
                 Origin: 'AWS_KMS',
                 Tags: [{
-                    TagKey: 'tenantid',
+                    TagKey: 'tenantId',
                     TagValue: tenantId,
                 }],
             });
@@ -173,11 +175,18 @@ describe('KeyManagementRepositoryAWSImpl', () => {
     });
 
     describe('setKeyPolicy', () => {
+        beforeEach(() => {
+            putKeyPolicy.mockImplementation(() => ({
+                promise() {
+                    return Promise.resolve(null);
+                }
+            }));
+        });
+
         it('should update the key policy for a targeted CMK', async () => {
             // given
             const keyId: string = '65775675685746456';
             const accountId: string = '45456756456';
-            putKeyPolicy.mockImplementation((): void => null);
             const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
             // when
             await keyManagement.setKeyPolicy(keyId, accountId, tenantId);
@@ -236,8 +245,8 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                             ],
                             "Resource": "*",
                             "Condition": {
-                                "StringEquals": {
-                                    "aws:PrincipalTag/tenantId": `${tenantId}`
+                                "StringNotEquals": {
+                                    "ec2:ResourceTag/tenantId": `${tenantId}`
                                 }
                             }
                         }

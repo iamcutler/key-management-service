@@ -45,7 +45,7 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
         const key = await this.keyStore.createKey({
             Origin: 'AWS_KMS',
             Tags: [{
-                TagKey: 'tenantid',
+                TagKey: 'tenantId',
                 TagValue: this.tenantId
             }]
         }).promise();
@@ -174,6 +174,6 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
             PolicyName: 'default'
         };
 
-        return await this.keyStore.putKeyPolicy(params);
+        return await this.keyStore.putKeyPolicy(params).promise();
     }
 }
