@@ -4,6 +4,7 @@ import CustomerKeyManagementController from './customerKeyManagement.controller'
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
 import { KeyManagementProvider } from '../../domain/key-management/KeyManagementProvider';
 import mock from '../../../test/mock';
+import KeyManagementRequestHeaders from '../../domain/key-management/dto/KeyManagementRequestHeaders';
 
 const { response } = mock();
 
@@ -29,14 +30,12 @@ describe('Controller: Key Management', () => {
         const tenantId: string = 'testing';
         const keyId: string = '466477565477456';
 
-        describe('Provider: KMS', () => {
+        describe('Provider: AWS', () => {
             // given
-            const provider: KeyManagementProvider = KeyManagementProvider.AWS;
             const aliasName: string = `alias/${tenantId}`;
-
-            request.headers = {
-                provider,
-            };
+            const headers = new KeyManagementRequestHeaders();
+            headers.provider = KeyManagementProvider.AWS;
+            headers.authorization = '75667567645345345u65567';
 
             beforeEach(() => {
                 jest.spyOn(KeyManagementRepositoryImpl.prototype, 'getKeyAlias').mockReturnValue(aliasName);
@@ -53,7 +52,7 @@ describe('Controller: Key Management', () => {
                 it('should call the key management implementation to find the existing key', async () => {
                     // given
                     // when
-                    await keyManagementController.createCustomerKey(request, response);
+                    await keyManagementController.createCustomerKey(headers, request, response);
                     // then
                     expect(KeyManagementRepositoryImpl.prototype.findExistingCustomerKey).toHaveBeenCalled();
                 });
@@ -61,7 +60,7 @@ describe('Controller: Key Management', () => {
                 it('should return the customer key and alias', async () => {
                     // given
                     // when
-                    await keyManagementController.createCustomerKey(request, response);
+                    await keyManagementController.createCustomerKey(headers, request, response);
                     // then
                     expect(response.jsonResponse).toHaveBeenCalledWith({
                         keyId,
@@ -83,7 +82,7 @@ describe('Controller: Key Management', () => {
                 it('should call the implementation to create a customer key', async () => {
                     // given
                     // when
-                    await keyManagementController.createCustomerKey(request, response);
+                    await keyManagementController.createCustomerKey(headers, request, response);
                     // then
                     expect(KeyManagementRepositoryImpl.prototype.createCustomerKey).toHaveBeenCalledWith();
                 });
@@ -91,7 +90,7 @@ describe('Controller: Key Management', () => {
                 it('should call the implementation to create a key alias from the new key', async () => {
                     // given
                     // when
-                    await keyManagementController.createCustomerKey(request, response);
+                    await keyManagementController.createCustomerKey(headers, request, response);
                     // then
                     expect(KeyManagementRepositoryImpl.prototype.createKeyAlias).toHaveBeenCalledWith(keyId);
                 });
@@ -99,7 +98,7 @@ describe('Controller: Key Management', () => {
                 it('should return the new customer key and alias', async () => {
                     // given
                     // when
-                    await keyManagementController.createCustomerKey(request, response);
+                    await keyManagementController.createCustomerKey(headers, request, response);
                     // then
                     expect(response.jsonResponse).toHaveBeenCalledWith({
                         keyId,
