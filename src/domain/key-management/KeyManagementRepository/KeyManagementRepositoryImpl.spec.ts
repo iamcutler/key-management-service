@@ -1,6 +1,5 @@
 import KeyManagementRepositoryImpl from './KeyManagementRepositoryImpl';
 import KeyManagementRepositoryAWSImpl from './KeyManagementRepositoryAWSImpl';
-import KeyManagementProviderException from '../exceptions/KeyManagementProvider/KeyManagementProvider.exception';
 import { KeyManagementProvider } from '../KeyManagementProvider';
 
 jest.mock('./KeyManagementRepositoryAWSImpl');
@@ -63,6 +62,29 @@ describe('KeyManagementRepositoryImpl', () => {
                 keyManagementImpl.getKeyAlias();
                 // then
                 expect(KeyManagementRepositoryAWSImpl.prototype.getKeyAlias).toHaveBeenCalledWith();
+            });
+        });
+
+        describe('createDataKey', () => {
+            it('should call key store implementation method', () => {
+                // given
+                const keyId = '75654676587865767855687';
+                // when
+                keyManagementImpl.createDataKey(keyId);
+                // then
+                expect(KeyManagementRepositoryAWSImpl.prototype.createDataKey).toHaveBeenCalledWith(keyId);
+            });
+        });
+
+        describe('decryptDataKey', () => {
+            it('should call key store implementation method', () => {
+                // given
+                const keyId: string = '75654676587865767855687';
+                const encryptedDataKey: string = "56756757676756756756";
+                // when
+                keyManagementImpl.decryptDataKey(keyId, encryptedDataKey);
+                // then
+                expect(KeyManagementRepositoryAWSImpl.prototype.decryptDataKey).toHaveBeenCalledWith(keyId, encryptedDataKey);
             });
         });
     });

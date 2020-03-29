@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import KeyManagementController from '../../interfaces/key-management/key-management.controller';
+import CustomerKeyManagementController from '../../interfaces/customerKeyManagement/customerKeyManagement.controller';
+import DataKeyManagementController from '../../interfaces/DataKeyManagement/DataKeyManagement.controller';
 
 @Module({
   controllers: [
-    KeyManagementController
+    CustomerKeyManagementController,
+    DataKeyManagementController,
   ],
   providers: [],
 })

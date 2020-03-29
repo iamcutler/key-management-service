@@ -24,4 +24,17 @@ describe('Exception Filter: AllExceptionsFilter', () => {
             null, ['Internal Server Error'], false, INTERNAL_SERVER_ERROR
         );
     });
+
+    it('should log the exception with the expected signature', () => {
+        // given
+        const exception: Error = new Error('Customer key not found');
+        // when
+        filter.catch(exception, hostContext);
+        // then
+        expect(Logger.error).toHaveBeenCalledWith({
+            message: 'Internal Server Error',
+            timestamp: expect.any(String),
+            exception,
+        });
+    });
 });

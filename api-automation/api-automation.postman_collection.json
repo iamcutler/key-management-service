@@ -15,10 +15,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "afbe54fe-fd10-44d6-ba1a-2a9ac868ca7a",
+								"id": "fa161cbe-3cb5-49d1-9b24-51d8e993b878",
 								"type": "text/javascript",
 								"exec": [
-									"// save token from response",
 									"const jsonData = pm.response.json();",
 									"",
 									"postman.setEnvironmentVariable(\"token\", jsonData.token);",
@@ -31,13 +30,18 @@
 						"method": "POST",
 						"header": [
 							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"username\": \"{{username}}\",\n\t\"password\": \"{{password}}\",\n\t\"captcha\": {}\n}\n"
+							"raw": "{\n\t\"username\": \"{{username}}\",\n\t\"password\": \"{{password}}\",\n\t\"catcha\": {}\n}"
 						},
 						"url": {
 							"raw": "{{control_room_url}}/v1/authentication",
@@ -106,7 +110,7 @@
 			]
 		},
 		{
-			"name": "Create a customer key",
+			"name": "Create a customer master key",
 			"description": "",
 			"item": [
 				{
@@ -119,11 +123,14 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d06edd58-ba95-4650-8054-6ae0c95e0f2b",
+										"id": "a0c43adf-ee06-4ed7-815c-bd9da11aad59",
 										"type": "text/javascript",
 										"exec": [
 											"const responseData = pm.response.json();",
 											"",
+											"postman.setEnvironmentVariable('currentKeyId', responseData['data']['alias'].replace('alias/', ''));",
+											"",
+											"// tests",
 											"pm.test('request should be valid and have a body', () => {",
 											"    pm.response.to.be.ok;",
 											"    pm.response.to.be.withBody;",
@@ -157,13 +164,13 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{protocol}}://{{host}}/keys",
+									"raw": "{{protocol}}://{{host}}/customer-keys",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
-										"keys"
+										"customer-keys"
 									]
 								}
 							},
@@ -210,13 +217,13 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{protocol}}://{{host}}/keys",
+							"raw": "{{protocol}}://{{host}}/customer-keys",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"keys"
+								"customer-keys"
 							]
 						}
 					},
@@ -262,13 +269,13 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{protocol}}://{{host}}/keys",
+							"raw": "{{protocol}}://{{host}}/customer-keys",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"keys"
+								"customer-keys"
 							]
 						}
 					},
@@ -295,6 +302,368 @@
 							""
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "Create customer data key",
+			"description": "",
+			"item": [
+				{
+					"name": "AWS",
+					"description": "",
+					"item": [
+						{
+							"name": "Create new customer data key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "51cb68c7-7362-4869-8421-db98c54a50c8",
+										"type": "text/javascript",
+										"exec": [
+											"const responseData = pm.response.json();",
+											"",
+											"postman.setEnvironmentVariable('currentEncryptedDataKey', responseData.data.cipherText);",
+											"",
+											"// tests",
+											"pm.test('request should be valid and have a body', () => {",
+											"    pm.response.to.be.ok;",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"pm.test('should return the expected data payload', () => {",
+											"    // validate key and alias is returned",
+											"    pm.expect(responseData['data']['keyId']).to.be.a('string');",
+											"    pm.expect(responseData['data']['plainText']).to.be.a('string');",
+											"    pm.expect(responseData['data']['cipherText']).to.be.a('string');",
+											"",
+											"    pm.response.to.have.jsonBody('success', true);",
+											"    pm.response.to.have.jsonBody('statusCode', 200);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "provider",
+										"value": "AWS"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {},
+								"url": {
+									"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"data-keys",
+										"{{currentKeyId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "when auth token is not present throw exception Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46b14088-9ef3-489e-b7fc-e5463b2f3c84",
+								"type": "text/javascript",
+								"exec": [
+									"const responseData = pm.response.json();",
+									"",
+									"pm.test('request should return the expected status', () => {",
+									"    pm.response.to.have.status(400); // BAD REQUEST",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test('should return the expected data payload', () => {",
+									"    pm.expect(responseData['data']).to.eq(null);",
+									"    pm.response.to.have.jsonBody('success', false);",
+									"    pm.response.to.have.jsonBody('statusCode', 400);",
+									"    pm.response.to.have.jsonBody('errors', [",
+									"        'No authorization token was present'",
+									"    ]);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "provider",
+								"value": "AWS"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"data-keys",
+								"{{currentKeyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "when key provider is not throw exception Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "327804b1-ab86-4400-b864-25396a1e6965",
+								"type": "text/javascript",
+								"exec": [
+									"const responseData = pm.response.json();",
+									"",
+									"pm.test('request return the expected status', () => {",
+									"    pm.response.to.have.status(400); // BAD REQUEST",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test('should return the expected data payload', () => {",
+									"    pm.expect(responseData['data']).to.eq(null);",
+									"    pm.response.to.have.jsonBody('success', false);",
+									"    pm.response.to.have.jsonBody('statusCode', 400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "provider",
+								"value": "AWS",
+								"disabled": true
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"data-keys",
+								"{{currentKeyId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Decrypt customer data key",
+			"description": "",
+			"item": [
+				{
+					"name": "AWS",
+					"description": "",
+					"item": [
+						{
+							"name": "Decrypt customer data key",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f8acff61-3288-41ee-b879-38f7ea4d8285",
+										"type": "text/javascript",
+										"exec": [
+											"const responseData = pm.response.json();",
+											"",
+											"pm.test('request should be valid and have a body', () => {",
+											"    pm.response.to.be.ok;",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"pm.test('should return the expected data payload', () => {",
+											"    // validate key and alias is returned",
+											"    pm.expect(responseData['data']['keyId']).to.be.a('string');",
+											"    pm.expect(responseData['data']['plainText']).to.be.a('string');",
+											"",
+											"    pm.response.to.have.jsonBody('success', true);",
+											"    pm.response.to.have.jsonBody('statusCode', 200);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "provider",
+										"value": "AWS"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"cipherText\": \"{{currentEncryptedDataKey}}\"\n}"
+								},
+								"url": {
+									"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}/decrypt",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"data-keys",
+										"{{currentKeyId}}",
+										"decrypt"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "when auth token is not present throw exception Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46b14088-9ef3-489e-b7fc-e5463b2f3c84",
+								"type": "text/javascript",
+								"exec": [
+									"const responseData = pm.response.json();",
+									"",
+									"pm.test('request should return the expected status', () => {",
+									"    pm.response.to.have.status(400); // BAD REQUEST",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test('should return the expected data payload', () => {",
+									"    pm.expect(responseData['data']).to.eq(null);",
+									"    pm.response.to.have.jsonBody('success', false);",
+									"    pm.response.to.have.jsonBody('statusCode', 400);",
+									"    pm.response.to.have.jsonBody('errors', [",
+									"        'No authorization token was present'",
+									"    ]);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "provider",
+								"value": "AWS"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}/decrypt",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"data-keys",
+								"{{currentKeyId}}",
+								"decrypt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "when key provider is not throw exception Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "327804b1-ab86-4400-b864-25396a1e6965",
+								"type": "text/javascript",
+								"exec": [
+									"const responseData = pm.response.json();",
+									"",
+									"pm.test('request return the expected status', () => {",
+									"    pm.response.to.have.status(400); // BAD REQUEST",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test('should return the expected data payload', () => {",
+									"    pm.expect(responseData['data']).to.eq(null);",
+									"    pm.response.to.have.jsonBody('success', false);",
+									"    pm.response.to.have.jsonBody('statusCode', 400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "provider",
+								"value": "AWS",
+								"disabled": true
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}/decrypt",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"data-keys",
+								"{{currentKeyId}}",
+								"decrypt"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

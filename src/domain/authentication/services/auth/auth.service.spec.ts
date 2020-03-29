@@ -26,6 +26,24 @@ describe('Service: AuthService', () => {
         jest.resetAllMocks();
     });
 
+    describe('authenticateByToken', () => {
+        // given
+        const tenantId = '88676578756456456';
+
+        it('should throw AuthenticationException if the authentication fails', async () => {
+            // given
+            const authService: AuthService = new AuthService(http);
+            // when
+            try {
+                await authService.authenticateByToken(tenantId, token);
+            }
+            catch (err) {
+                // then
+                expect(err.message).toEqual(`Authentication failed for tenant: ${tenantId}`);
+            }
+        });
+    });
+
     describe('getContentFromAuthToken', () => {
         it('should decode the token and return the claim(s)', () => {
             // given
