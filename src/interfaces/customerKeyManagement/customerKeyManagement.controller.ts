@@ -1,9 +1,10 @@
-import { Request as expressRequest, Response as expressResponse } from 'express';
+import { Request, Response } from 'express';
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
-import { Controller, Post, Request, Response, UseFilters } from '@nestjs/common';
+import { Controller, Post, Req, Res, UseFilters, Headers } from '@nestjs/common';
 import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
 import { CustomerKeyNotFoundExceptionFilter } from '../../domain/key-management/exceptions/CustomerKeyNotFound/CustomerKeyNotFound.filter';
 import { IncomingHttpHeaders } from 'http';
+import KeyManagementRequestHeaders from '../../domain/key-management/dto/KeyManagementRequestHeaders';
 
 @Controller('/customer-keys')
 export default class CustomerKeyManagementController {
@@ -18,10 +19,11 @@ export default class CustomerKeyManagementController {
         new KeyManagementProviderExceptionFilter(),
         new CustomerKeyNotFoundExceptionFilter(),
     )
-    async createCustomerKey(@Request() req: expressRequest, @Response() res: expressResponse) {
-        const headers: IncomingHttpHeaders = req.headers;
+    async createCustomerKey(
+        @Headers() headers: KeyManagementRequestHeaders,
+        @Req() req: Request, @Res() res: Response
+    ) {
         const provider: any = headers.provider;
-
         const keyService = new KeyManagementRepositoryImpl(req.tenantId, provider);
         const aliasName = keyService.getKeyAlias();
 

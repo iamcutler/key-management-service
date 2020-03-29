@@ -1,10 +1,11 @@
-import { Controller, Post, UseFilters, Req, Res } from "@nestjs/common";
+import { Controller, Post, UseFilters, Req, Res, Body, Headers, Param } from "@nestjs/common";
 import { Request, Response } from 'express';
 import { IncomingHttpHeaders } from 'http';
-import { CustomerKeyNotFoundExceptionFilter } from '../../domain/key-management/exceptions/CustomerKeyNotFound/CustomerKeyNotFound.filter';
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
 import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
-import DecryptDataKeyRequest from '../../domain/models/key-management/DecryptDataKeyRequest';
+import DecryptDataKeyRequest from '../../domain/key-management/dto/DecryptDataKeyRequest';
+import KeyManagementRequestHeaders from "../../domain/key-management/dto/KeyManagementRequestHeaders";
+import DataKey from '../../domain/models/key-management/DataKey';
 
 @Controller('/data-keys')
 @UseFilters(
@@ -15,33 +16,49 @@ export default class DataKeyManagementController {
      * Create a customer data key
      * @description Use a CMK alias to generate a associated data key
      *
+     * @param headers
+     * @param keyAlias
      * @param req
      * @param res
      */
     @Post('/:keyAlias')
-    async createDataKey(@Req() req: Request, @Res() res: Response) {
-        const headers: IncomingHttpHeaders = req.headers;
+    async createDataKey(
+        @Headers() headers: KeyManagementRequestHeaders,
+        @Param('keyAlias') keyAlias: string,
+        @Req() req: Request, @Res() res: Response
+    ) {
         const provider: any = headers.provider;
-        const keyAlias: string = req.params.keyAlias;
         
         const keyService = new KeyManagementRepositoryImpl(req.tenantId, provider);
 
         // create the dataKey
-        const dataKey = await keyService.createDataKey(keyAlias);
+        const dataKey: DataKey = await keyService.createDataKey(keyAlias);
 
         res.jsonResponse(dataKey);
     }
 
+    /**
+     * Decrypt data key
+     *
+     * @param headers
+     * @param keyAlias
+     * @param decryptDataKey
+     * @param req
+     * @param res
+     */
     @Post('/:keyAlias/decrypt')
-    async decryptDataKey(@Req() req: Request, @Res() res: Response) {
-        const headers: IncomingHttpHeaders = req.headers;
+    async decryptDataKey(
+        @Headers() headers: KeyManagementRequestHeaders,
+        @Param('keyAlias') keyAlias: string,
+        @Body() decryptDataKey: DecryptDataKeyRequest,
+        @Req() req: Request, @Res() res: Response
+    ) {
         const provider: any = headers.provider;
-        const keyAlias: string = req.params.keyAlias;
-        const { cipherText }: DecryptDataKeyRequest = req.body;
+        const { cipherText }: DecryptDataKeyRequest = decryptDataKey;
         
         const keyService = new KeyManagementRepositoryImpl(req.tenantId, provider);
         // decrypt the encryped data key
-        const key = await keyService.decryptDataKey(keyAlias, cipherText);
+        const key: DataKey = await keyService.decryptDataKey(keyAlias, cipherText);
 
         res.jsonResponse(key);
     }
