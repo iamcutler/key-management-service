@@ -4,7 +4,7 @@ import CustomerKey from '../../models/key-management/CustomerKey';
 import KeyManagementRepositoryAWSImpl from './KeyManagementRepositoryAWSImpl';
 import { KeyManagementProvider } from '../KeyManagementProvider';
 import KeyManagementProviderException from '../exceptions/KeyManagementProvider/KeyManagementProvider.exception';
-import DataKey from '../../../../dist/src/domain/models/key-management/DataKey';
+import DataKey from '../../../domain/models/key-management/DataKey';
 
 export default class KeyManagementRepositoryImpl implements KeyManagementRepository {
     tenantId: string;
