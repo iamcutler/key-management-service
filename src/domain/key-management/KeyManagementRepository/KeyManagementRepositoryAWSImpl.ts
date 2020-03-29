@@ -3,6 +3,8 @@ import KeyManagementRepository from './KeyManagementRepository';
 import CustomerKey from '../../models/key-management/CustomerKey';
 import CustomerKeyNotFoundException from '../exceptions/CustomerKeyNotFound/CustomerKeyNotFound.exception';
 import { GetCallerIdentityResponse } from 'aws-sdk/clients/sts';
+import DataKey from '../../models/key-management/DataKey';
+import { GenerateDataKeyResponse } from 'aws-sdk/clients/kms';
 
 export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepository {
     tenantId: string;
@@ -90,24 +92,48 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
     }
 
     /**
-     * Get the current user account id
+     * Generate an AWS data key from the CMK
+     *
+     * @param keyAlias
      */
-    private async getUserIdentity(): Promise<GetCallerIdentityResponse> {
-        const sts: STS = new STS({
-            accessKeyId: '',
-            secretAccessKey: ''
-        });
+    async createDataKey(keyAlias: string): Promise<DataKey> {
+        const dataKey: GenerateDataKeyResponse = await this.keyStore.generateDataKey({
+            KeyId: `alias/${keyAlias}`,
+            KeySpec: 'AES_256'
+        }).promise();
 
-        return await sts.getCallerIdentity().promise();
+        return {
+            keyId: dataKey.KeyId,
+            plainText: dataKey.Plaintext.toString('base64'),
+            cipherText: dataKey.CiphertextBlob.toString('base64')
+        };
     }
+
+    /**
+     * Decrypt a data key
+     *
+     * @param keyAlias
+     * @param encryptedDataKey
+     */
+    async decryptDataKey(keyAlias: string, encryptedDataKey: string): Promise<DataKey> {
+        const dataKey: GenerateDataKeyResponse = await this.keyStore.decrypt({
+            KeyId: `alias/${keyAlias}`,
+            CiphertextBlob: Buffer.from(encryptedDataKey, 'base64')
+        }).promise();
+
+        return {
+            keyId: dataKey.KeyId,
+            plainText: dataKey.Plaintext.toString('base64')
+        };
+    };
 
     /**
      * Get the associated key policy
      * @description this policy is used to restrict the access of the key to the entended principal(s)
      *
      * @param keyId
-     * @param accountId 
-     * @param tenantId 
+     * @param accountId
+     * @param tenantId
      */
     async setKeyPolicy(keyId: string, accountId: string, tenantId: string) {
         const params = {
@@ -175,5 +201,18 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
         };
 
         return await this.keyStore.putKeyPolicy(params).promise();
+    }
+
+    /**
+     * Get the current user account id
+     * @private
+     */
+    private async getUserIdentity(): Promise<GetCallerIdentityResponse> {
+        const sts: STS = new STS({
+            accessKeyId: '',
+            secretAccessKey: ''
+        });
+
+        return await sts.getCallerIdentity().promise();
     }
 }

@@ -1,12 +1,12 @@
-import {Request as expressRequest, Response as expressResponse, NextFunction} from 'express';
+import { Request as expressRequest, Response as expressResponse } from 'express';
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
 import { Controller, Post, Request, Response, UseFilters } from '@nestjs/common';
 import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
 import { CustomerKeyNotFoundExceptionFilter } from '../../domain/key-management/exceptions/CustomerKeyNotFound/CustomerKeyNotFound.filter';
 import { IncomingHttpHeaders } from 'http';
 
-@Controller('/keys')
-export default class KeyManagementController {
+@Controller('/customer-keys')
+export default class CustomerKeyManagementController {
     /**
      * Create a customer custom managed key
      *

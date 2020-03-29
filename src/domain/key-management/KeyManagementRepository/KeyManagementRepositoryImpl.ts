@@ -4,6 +4,7 @@ import CustomerKey from '../../models/key-management/CustomerKey';
 import KeyManagementRepositoryAWSImpl from './KeyManagementRepositoryAWSImpl';
 import { KeyManagementProvider } from '../KeyManagementProvider';
 import KeyManagementProviderException from '../exceptions/KeyManagementProvider/KeyManagementProvider.exception';
+import DataKey from '../../../domain/models/key-management/DataKey';
 
 export default class KeyManagementRepositoryImpl implements KeyManagementRepository {
     tenantId: string;
@@ -55,5 +56,24 @@ export default class KeyManagementRepositoryImpl implements KeyManagementReposit
      */
     getKeyAlias() : string {
         return this.keyStore.getKeyAlias();
+    }
+
+    /**
+     * Create a data key from a CMK
+     *
+     * @param keyId
+     */
+    async createDataKey(keyId: string): Promise<DataKey> {
+        return this.keyStore.createDataKey(keyId);
+    }
+
+    /**
+     * Decrypt a data key
+     *
+     * @param keyId 
+     * @param encryptedDataKey 
+     */
+    async decryptDataKey(keyId: string, encryptedDataKey: string): Promise<DataKey> {
+        return this.keyStore.decryptDataKey(keyId, encryptedDataKey);
     }
 }

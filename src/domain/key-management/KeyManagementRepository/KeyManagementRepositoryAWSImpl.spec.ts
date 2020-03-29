@@ -7,6 +7,12 @@ const describeKey = jest.fn();
 const putKeyPolicy = jest.fn().mockImplementation(() => ({
     promise: jest.fn()
 }));
+const generateDataKey = jest.fn().mockImplementation(() => ({
+    promise: jest.fn()
+}));
+const decrypt = jest.fn().mockImplementation(() => ({
+    promise: jest.fn()
+}));
 const getCallerIdentity = jest.fn().mockImplementation(() => ({
     promise() {
         return Promise.resolve({});
@@ -18,6 +24,8 @@ jest.mock('aws-sdk', () => ({
         createAlias,
         createKey,
         describeKey,
+        decrypt,
+        generateDataKey,
         putKeyPolicy,
     })),
     STS: jest.fn(() => ({
@@ -253,6 +261,62 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     ]
                 }),
                 PolicyName: 'default'
+            });
+        });
+    });
+
+    describe('createDataKey', () => {
+        beforeEach(() => {
+            generateDataKey.mockImplementation(() => ({
+                promise() {
+                    return Promise.resolve({
+                        KeyId: '75467865764345345',
+                        Plaintext: Buffer.from('plaintext'),
+                        CiphertextBlob: Buffer.from('ciphertext')
+                    });
+                }
+            }));
+        });
+
+        it('should call KMS to generate a data key from the CMK', async () => {
+            // given
+            const keyAlias: string = '65775675685746456';
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            // when
+            await keyManagement.createDataKey(keyAlias);
+            // then
+            expect(generateDataKey).toHaveBeenCalledWith({
+                KeyId: `alias/${keyAlias}`,
+                KeySpec: 'AES_256'
+            });
+        });
+    });
+
+    describe('decryptDataKey', () => {
+        // given
+        const keyAlias: string = '76657868756786875678';
+        const encryptedDataKey: string = "5676857867576465465653";
+
+        beforeEach(() => {
+            decrypt.mockImplementation(() => ({
+                promise() {
+                    return Promise.resolve({
+                        KeyId: '75467865764345345',
+                        Plaintext: Buffer.from('plaintext'),
+                    });
+                }
+            }));
+        });
+
+        it('should call KMS to decrypt an encrypted data key', async () => {
+            // given
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            // when
+            await keyManagement.decryptDataKey(keyAlias, encryptedDataKey);
+            // then
+            expect(decrypt).toHaveBeenCalledWith({
+                KeyId: `alias/${keyAlias}`,
+                CiphertextBlob: Buffer.from(encryptedDataKey, 'base64')
             });
         });
     });

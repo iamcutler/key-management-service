@@ -11,7 +11,8 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
     Logger.error({
         message: 'Internal Server Error',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        exception,
     });
 
     response.jsonResponse(null, ['Internal Server Error'], false, INTERNAL_SERVER_ERROR);

@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { request } from 'express';
-import KeyManagementController from './key-management.controller';
+import CustomerKeyManagementController from './customerKeyManagement.controller';
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
 import { KeyManagementProvider } from '../../domain/key-management/KeyManagementProvider';
 import mock from '../../../test/mock';
@@ -8,16 +8,16 @@ import mock from '../../../test/mock';
 const { response } = mock();
 
 describe('Controller: Key Management', () => {
-    let keyManagementController: KeyManagementController;
+    let keyManagementController: CustomerKeyManagementController;
 
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
             imports: [],
-            controllers: [KeyManagementController],
+            controllers: [CustomerKeyManagementController],
             providers: [],
         }).compile();
     
-        keyManagementController = moduleRef.get<KeyManagementController>(KeyManagementController);
+        keyManagementController = moduleRef.get<CustomerKeyManagementController>(CustomerKeyManagementController);
     });
 
     afterEach(() => {

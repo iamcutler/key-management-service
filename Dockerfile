@@ -31,6 +31,8 @@ COPY --from=development /usr/src/app/dist ./dist
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
+ARG CONTROL_ROOM_URL
+
 ARG PORT=3000
 ENV PORT=${PORT}
 
