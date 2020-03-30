@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { IncomingHttpHeaders } from 'http';
-import { Injectable, NestMiddleware, UseFilters } from '@nestjs/common';
+import { Injectable, NestMiddleware, UseFilters, Req, Res, Next } from '@nestjs/common';
 import AuthTokenException from '../expectations/AuthTokenException/AuthToken.exception';
 import { AuthService } from '../services/auth/auth.service';
 import { AuthenticationExceptionFilter } from '../expectations/Authentication/Authentication.exception.filter';
@@ -17,7 +17,9 @@ import { AuthenticationExceptionFilter } from '../expectations/Authentication/Au
 export class AuthorizationMiddleware implements NestMiddleware {
    constructor(private readonly authService: AuthService) {}
 
-   async use(req: Request, res: Response, next: NextFunction) {
+   async use(
+      @Req() req: Request, @Res() res: Response, @Next() next: NextFunction
+   ) {
       // get token and decode or any custom auth logic
       const headers: IncomingHttpHeaders = req.headers;
       const token = headers.authorization;
