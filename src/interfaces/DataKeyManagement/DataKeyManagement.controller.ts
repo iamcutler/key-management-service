@@ -2,7 +2,7 @@ import { Controller, Post, UseFilters, Req, Res, Body, Headers, Param } from "@n
 import { Request, Response } from 'express';
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
 import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
-import DecryptDataKeyRequest from '../../domain/key-management/dto/DecryptDataKeyRequest';
+import DecryptDataKeyRequest from '../../domain/key-management/dto/DecryptDataKeyRequest.dto';
 import KeyManagementRequestHeaders from "../../domain/key-management/dto/KeyManagementRequestHeaders";
 import DataKey from '../../domain/models/key-management/DataKey';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';

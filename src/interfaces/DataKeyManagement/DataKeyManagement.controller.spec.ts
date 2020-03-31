@@ -5,7 +5,7 @@ import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManageme
 import { KeyManagementProvider } from '../../domain/key-management/KeyManagementProvider';
 import mock from '../../../test/mock';
 import KeyManagementRequestHeaders from '../../domain/key-management/dto/KeyManagementRequestHeaders';
-import DecryptDataKeyRequest from '../../domain/key-management/dto/DecryptDataKeyRequest';
+import DecryptDataKeyRequest from '../../domain/key-management/dto/DecryptDataKeyRequest.dto';
 
 const { response } = mock();
 
@@ -88,7 +88,7 @@ describe('Controller: Data Key Management', () => {
                 await dataKeyManagementController.decryptDataKey(headers, keyAlias, body, request, response);
             });
 
-            it('should call the key management implementation to fcreate a data key', async () => {
+            it('should call the key management implementation to create a data key', async () => {
                 // given
                 // when
                 // then
