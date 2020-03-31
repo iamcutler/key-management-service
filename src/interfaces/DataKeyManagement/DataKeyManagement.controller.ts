@@ -7,7 +7,7 @@ import KeyManagementRequestHeaders from "../../domain/key-management/dto/KeyMana
 import DataKey from '../../domain/models/key-management/DataKey';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
-@Controller('/data-keys')
+@Controller('/customer-keys/:keyAlias/data-keys')
 @UseFilters(new KeyManagementProviderExceptionFilter())
 @ApiTags('Data Keys')
 @ApiHeader({ name: 'authorization', description: 'JWT authentication token' })
@@ -22,7 +22,7 @@ export default class DataKeyManagementController {
      * @param req
      * @param res
      */
-    @Post('/:keyAlias')
+    @Post('/')
     async createDataKey(
         @Headers() headers: KeyManagementRequestHeaders,
         @Param('keyAlias') keyAlias: string,
@@ -47,7 +47,7 @@ export default class DataKeyManagementController {
      * @param req
      * @param res
      */
-    @Post('/:keyAlias/decrypt')
+    @Post('/decrypt')
     async decryptDataKey(
         @Headers() headers: KeyManagementRequestHeaders,
         @Param('keyAlias') keyAlias: string,
