@@ -6,6 +6,7 @@ import { jsonResponse } from './middleware/jsonresponse.middleware';
 import { AllExceptionsFilter } from './exceptions/all-exceptions/all-exceptions.filter';
 import { AuthTokenExceptionFilter } from './domain/authentication/expectations/AuthTokenException/AuthToken.exception.filter';
 import BadRequestExceptionFilter from './exceptions/BadRequest/BadRequest.filter';
+import NotFoundExceptionFilter from './exceptions/NotFound/NotFound.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,7 @@ async function bootstrap() {
     new AllExceptionsFilter(httpAdapter),
     new AuthTokenExceptionFilter(),
     new BadRequestExceptionFilter(),
+    new NotFoundExceptionFilter(),
   );
   app.useGlobalPipes(new ValidationPipe());
 
