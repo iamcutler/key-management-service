@@ -1,17 +1,25 @@
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { jsonResponse } from './middleware/jsonresponse.middleware';
-import { AllExceptionsFilter } from './exceptions/all-exceptions.filter';
+import { AllExceptionsFilter } from './exceptions/all-exceptions/all-exceptions.filter';
 import { AuthTokenExceptionFilter } from './domain/authentication/expectations/AuthTokenException/AuthToken.exception.filter';
+import BadRequestExceptionFilter from './exceptions/BadRequest/BadRequest.filter';
+import NotFoundExceptionFilter from './exceptions/NotFound/NotFound.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const { httpAdapter } = app.get(HttpAdapterHost);
 
   app.use(jsonResponse);
-  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
-  app.useGlobalFilters(new AuthTokenExceptionFilter());
+  app.useGlobalFilters(
+    new AllExceptionsFilter(httpAdapter),
+    new AuthTokenExceptionFilter(),
+    new BadRequestExceptionFilter(),
+    new NotFoundExceptionFilter(),
+  );
+  app.useGlobalPipes(new ValidationPipe());
 
   const options = new DocumentBuilder()
     .setTitle('Key Management Service')
@@ -20,7 +28,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api-docs', app, document);
 
   await app.listen(process.env.PORT || 3000);
 }

@@ -1,16 +1,17 @@
 import { Controller, Post, UseFilters, Req, Res, Body, Headers, Param } from "@nestjs/common";
 import { Request, Response } from 'express';
-import { IncomingHttpHeaders } from 'http';
 import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManagementRepository/KeyManagementRepositoryImpl';
 import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
-import DecryptDataKeyRequest from '../../domain/key-management/dto/DecryptDataKeyRequest';
+import DecryptDataKeyRequest from '../../domain/key-management/dto/DecryptDataKeyRequest.dto';
 import KeyManagementRequestHeaders from "../../domain/key-management/dto/KeyManagementRequestHeaders";
 import DataKey from '../../domain/models/key-management/DataKey';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
-@Controller('/data-keys')
-@UseFilters(
-    new KeyManagementProviderExceptionFilter(),
-)
+@Controller('/customer-keys/:keyAlias/data-keys')
+@UseFilters(new KeyManagementProviderExceptionFilter())
+@ApiTags('Data Keys')
+@ApiHeader({ name: 'authorization', description: 'JWT authentication token' })
+@ApiHeader({ name: 'provider', description: 'Key Management Provider (e.g. AWS)' })
 export default class DataKeyManagementController {
     /**
      * Create a customer data key
@@ -21,7 +22,7 @@ export default class DataKeyManagementController {
      * @param req
      * @param res
      */
-    @Post('/:keyAlias')
+    @Post('/')
     async createDataKey(
         @Headers() headers: KeyManagementRequestHeaders,
         @Param('keyAlias') keyAlias: string,
@@ -46,7 +47,7 @@ export default class DataKeyManagementController {
      * @param req
      * @param res
      */
-    @Post('/:keyAlias/decrypt')
+    @Post('/decrypt')
     async decryptDataKey(
         @Headers() headers: KeyManagementRequestHeaders,
         @Param('keyAlias') keyAlias: string,

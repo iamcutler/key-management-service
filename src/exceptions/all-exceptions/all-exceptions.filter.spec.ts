@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
-import mock from '../../test/mock';
+import mock from '../../../test/mock';
 
 const { hostContext } = mock();
 

@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { Controller, Get, Req, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('/health')
+@ApiTags('Health')
 export default class HealthController {
 
     /**

@@ -6,6 +6,57 @@
 	},
 	"item": [
 		{
+			"name": "Health",
+			"description": "",
+			"item": [
+				{
+					"name": "GET: Health",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4e781fc3-d35e-4830-a3de-b7034fc34204",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('should return a status code of 200', () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('should return OK in the body', () => {",
+									"    pm.expect(pm.response.text()).to.include(\"OK\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Authorization",
+								"value": "eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiIzIiwiY2xpZW50VHlwZSI6IldFQiIsImxpY2Vuc2VzIjpbIkRFVkVMT1BNRU5UIl0sImFuYWx5dGljc0xpY2Vuc2VzUHVyY2hhc2VkIjp7IkFuYWx5dGljc0NsaWVudCI6ZmFsc2UsIkFuYWx5dGljc0FQSSI6ZmFsc2V9LCJpYXQiOjE1NjQ2MDQ0NzYsImV4cCI6MTU2NDYwNTY3NiwiaXNzIjoiQXV0b21hdGlvbkFueXdoZXJlIiwibmFub1RpbWUiOjkxNjY1OTkwNDY3MDV9.kkoeSeUwKGzzKWU4Hn7v6fvy3YyunUE4Sdz9uaaNgt61F2Vi8jEo-fbEh9pvhDfuRpeuwL9ELE5CC4qGfDHEjrSxve0RlRYRhkIvbquNGog-K2bMI7pPcln7zL4vsYRN1QMDuf8CuFX194ngp7QaTy2UJgGjvBS5HhJQnSHoh9dbghkOc-MwU7co1MuqyyzHOcXXNBYo2QeeQbxJBHUjvX7ByoQAcWSzchxZNtY27mV2-0GoatxDlTesOAhu-y0kIWbR2akm8MGl6NDFAx31UkV97T3diZtlMtdlpxgtEhI_ztcBSq_6_xoBXeJBPbTKHdCE2eMDejZgP3pHyFGSdA",
+								"disabled": true
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{protocol}}://{{host}}/health",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Health check for key service"
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Authentication",
 			"description": "",
 			"item": [
@@ -53,57 +104,6 @@
 								"authentication"
 							]
 						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Health",
-			"description": "",
-			"item": [
-				{
-					"name": "GET: Health",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "4e781fc3-d35e-4830-a3de-b7034fc34204",
-								"type": "text/javascript",
-								"exec": [
-									"pm.test('should return a status code of 200', () => {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('should return OK in the body', () => {",
-									"    pm.expect(pm.response.text()).to.include(\"OK\");",
-									"});",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-Authorization",
-								"value": "eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiIzIiwiY2xpZW50VHlwZSI6IldFQiIsImxpY2Vuc2VzIjpbIkRFVkVMT1BNRU5UIl0sImFuYWx5dGljc0xpY2Vuc2VzUHVyY2hhc2VkIjp7IkFuYWx5dGljc0NsaWVudCI6ZmFsc2UsIkFuYWx5dGljc0FQSSI6ZmFsc2V9LCJpYXQiOjE1NjQ2MDQ0NzYsImV4cCI6MTU2NDYwNTY3NiwiaXNzIjoiQXV0b21hdGlvbkFueXdoZXJlIiwibmFub1RpbWUiOjkxNjY1OTkwNDY3MDV9.kkoeSeUwKGzzKWU4Hn7v6fvy3YyunUE4Sdz9uaaNgt61F2Vi8jEo-fbEh9pvhDfuRpeuwL9ELE5CC4qGfDHEjrSxve0RlRYRhkIvbquNGog-K2bMI7pPcln7zL4vsYRN1QMDuf8CuFX194ngp7QaTy2UJgGjvBS5HhJQnSHoh9dbghkOc-MwU7co1MuqyyzHOcXXNBYo2QeeQbxJBHUjvX7ByoQAcWSzchxZNtY27mV2-0GoatxDlTesOAhu-y0kIWbR2akm8MGl6NDFAx31UkV97T3diZtlMtdlpxgtEhI_ztcBSq_6_xoBXeJBPbTKHdCE2eMDejZgP3pHyFGSdA",
-								"disabled": true
-							}
-						],
-						"body": {},
-						"url": {
-							"raw": "{{protocol}}://{{host}}/health",
-							"protocol": "{{protocol}}",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"health"
-							]
-						},
-						"description": "Health check for key service"
 					},
 					"response": []
 				}
@@ -180,7 +180,7 @@
 					"_postman_isSubFolder": true
 				},
 				{
-					"name": "when key provider is not throw exception",
+					"name": "should return bad request when when key provider header is not present",
 					"event": [
 						{
 							"listen": "test",
@@ -230,7 +230,7 @@
 					"response": []
 				},
 				{
-					"name": "when auth token is not present throw exception",
+					"name": "should throw auth exception when auth token is not present",
 					"event": [
 						{
 							"listen": "test",
@@ -361,14 +361,15 @@
 								],
 								"body": {},
 								"url": {
-									"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}",
+									"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
-										"data-keys",
-										"{{currentKeyId}}"
+										"customer-keys",
+										"{{currentKeyId}}",
+										"data-keys"
 									]
 								}
 							},
@@ -378,7 +379,7 @@
 					"_postman_isSubFolder": true
 				},
 				{
-					"name": "when auth token is not present throw exception Copy",
+					"name": "should throw auth exception when auth token is not present",
 					"event": [
 						{
 							"listen": "test",
@@ -417,21 +418,22 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}",
+							"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"data-keys",
-								"{{currentKeyId}}"
+								"customer-keys",
+								"{{currentKeyId}}",
+								"data-keys"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "when key provider is not throw exception Copy",
+					"name": "should return bad request when when key provider header is not present",
 					"event": [
 						{
 							"listen": "test",
@@ -468,14 +470,15 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}",
+							"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"data-keys",
-								"{{currentKeyId}}"
+								"customer-keys",
+								"{{currentKeyId}}",
+								"data-keys"
 							]
 						}
 					},
@@ -542,14 +545,15 @@
 									"raw": "{\n\t\"cipherText\": \"{{currentEncryptedDataKey}}\"\n}"
 								},
 								"url": {
-									"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}/decrypt",
+									"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys/decrypt",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{host}}"
 									],
 									"path": [
-										"data-keys",
+										"customer-keys",
 										"{{currentKeyId}}",
+										"data-keys",
 										"decrypt"
 									]
 								}
@@ -560,7 +564,79 @@
 					"_postman_isSubFolder": true
 				},
 				{
-					"name": "when auth token is not present throw exception Copy",
+					"name": "validations",
+					"description": "",
+					"item": [
+						{
+							"name": "should return bad request if encrypted data key is not provided",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "61438983-a374-464a-88dd-83c4016c0c0d",
+										"type": "text/javascript",
+										"exec": [
+											"const responseData = pm.response.json();",
+											"",
+											"pm.test('request should return the expected status', () => {",
+											"    pm.response.to.have.status(400); // BAD REQUEST",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"pm.test('should return the expected data payload', () => {",
+											"    pm.expect(responseData['data']).to.eq(null);",
+											"    pm.response.to.have.jsonBody('success', false);",
+											"    pm.response.to.have.jsonBody('errors', [",
+											"        'cipherText must be a string'",
+											"    ]);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "provider",
+										"value": "AWS"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}"
+								},
+								"url": {
+									"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys/decrypt",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"customer-keys",
+										"{{currentKeyId}}",
+										"data-keys",
+										"decrypt"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "should throw auth exception when auth token is not present",
 					"event": [
 						{
 							"listen": "test",
@@ -599,14 +675,15 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}/decrypt",
+							"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys/decrypt",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"data-keys",
+								"customer-keys",
 								"{{currentKeyId}}",
+								"data-keys",
 								"decrypt"
 							]
 						}
@@ -614,7 +691,7 @@
 					"response": []
 				},
 				{
-					"name": "when key provider is not throw exception Copy",
+					"name": "should return bad request when when key provider header is not present",
 					"event": [
 						{
 							"listen": "test",
@@ -651,14 +728,15 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{protocol}}://{{host}}/data-keys/{{currentKeyId}}/decrypt",
+							"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys/decrypt",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"data-keys",
+								"customer-keys",
 								"{{currentKeyId}}",
+								"data-keys",
 								"decrypt"
 							]
 						}

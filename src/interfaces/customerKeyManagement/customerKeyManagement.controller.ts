@@ -3,10 +3,13 @@ import KeyManagementRepositoryImpl from '../../domain/key-management/KeyManageme
 import { Controller, Post, Req, Res, UseFilters, Headers } from '@nestjs/common';
 import { KeyManagementProviderExceptionFilter } from '../../domain/key-management/exceptions/KeyManagementProvider/KeyManagementProvider.filter';
 import { CustomerKeyNotFoundExceptionFilter } from '../../domain/key-management/exceptions/CustomerKeyNotFound/CustomerKeyNotFound.filter';
-import { IncomingHttpHeaders } from 'http';
 import KeyManagementRequestHeaders from '../../domain/key-management/dto/KeyManagementRequestHeaders';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
 @Controller('/customer-keys')
+@ApiTags('CMK')
+@ApiHeader({ name: 'authorization', description: 'JWT authentication token' })
+@ApiHeader({ name: 'provider', description: 'Key Management Provider (e.g. AWS)' })
 export default class CustomerKeyManagementController {
     /**
      * Create a customer custom managed key
