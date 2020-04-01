@@ -6,6 +6,7 @@ import DecryptDataKeyRequest from '../../domain/key-management/dto/DecryptDataKe
 import KeyManagementRequestHeaders from "../../domain/key-management/dto/KeyManagementRequestHeaders";
 import DataKey from '../../domain/models/key-management/DataKey';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { KeyManagementProvider } from '../../domain/key-management/KeyManagementProvider';
 
 @Controller('/customer-keys/:keyAlias/data-keys')
 @UseFilters(new KeyManagementProviderExceptionFilter())
@@ -28,7 +29,7 @@ export default class DataKeyManagementController {
         @Param('keyAlias') keyAlias: string,
         @Req() req: Request, @Res() res: Response
     ) {
-        const provider: any = headers.provider;
+        const provider: KeyManagementProvider = headers.provider;
         
         const keyService = new KeyManagementRepositoryImpl(req.tenantId, provider);
 
