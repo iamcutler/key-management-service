@@ -16,9 +16,9 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
     constructor(tenantId: string) {
         this.tenantId = tenantId;
         this.keyStore = new KMS({
-            region: 'us-east-2',
             accessKeyId: '',
             secretAccessKey: ''
+            region: process.env.AWS_REGION,
         });
     }
 

@@ -28,6 +28,9 @@ RUN npm install --only=production
 # Copy build files from development stage
 COPY --from=development /usr/src/app/dist ./dist
 
+ARG AWS_REGION=us-west-2
+ENV AWS_REGION=${AWS_REGION}
+
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 

@@ -5,6 +5,7 @@ This service is used to handle envolope encryption within the platform. This ser
 ### Environment Variables
 - CONTROL_ROOM_URL (URL to Control Room for authentication)
 - PORT (Desired port for the application to run on. Default is 3000)
+- AWS_REGION
 
 ##### Local development:
 Copy the .env.sample file to a new .env file and set the required environment variables
