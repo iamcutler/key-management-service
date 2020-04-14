@@ -17,8 +17,13 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
         this.tenantId = tenantId;
         this.keyStore = new KMS({
             region: process.env.AWS_REGION,
-            accessKeyId: '',
-            secretAccessKey: '',
+            // use access keys if present
+            ...(
+                process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY ? {
+                    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+                } : {}
+            )
         });
     }
 
@@ -209,8 +214,13 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
      */
     private async getUserIdentity(): Promise<GetCallerIdentityResponse> {
         const sts: STS = new STS({
-            accessKeyId: '',
-            secretAccessKey: ''
+            // use access keys if present
+            ...(
+                process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY ? {
+                    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+                } : {}
+            )
         });
 
         return await sts.getCallerIdentity().promise();
