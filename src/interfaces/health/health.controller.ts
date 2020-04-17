@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import { Get, Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
 
 @Controller('/health')
 @ApiTags('Health')
 export default class HealthController {
+    constructor(
+        private health: HealthCheckService,
+    ) {}
 
     /**
      * Get the health of the application
@@ -14,7 +18,8 @@ export default class HealthController {
      * @param next
      */
     @Get()
-    getHealth(@Req() req: Request, @Res() res: Response) {
-        res.send('OK');
+    @HealthCheck()
+    async check() {
+        return this.health.check([]);
     }
 }

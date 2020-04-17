@@ -1,3 +1,5 @@
+import { Test } from '@nestjs/testing';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import KeyManagementRepositoryAWSImpl from './KeyManagementRepositoryAWSImpl';
 import CustomerKeyNotFoundException from '../exceptions/CustomerKeyNotFound/CustomerKeyNotFound.exception';
 
@@ -36,7 +38,18 @@ jest.mock('aws-sdk', () => ({
 describe('KeyManagementRepositoryAWSImpl', () => {
     // given
     const tenantId = '567567756756645456456';
+    const configService: ConfigService = new ConfigService();
 
+    beforeEach(async (): Promise<void> => {
+        await Test.createTestingModule({
+            controllers: [],
+            providers: [],
+            imports: [
+                ConfigModule.forRoot()
+            ]
+          }).compile();
+    });
+    
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -50,7 +63,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({});
                 }
             }));
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             await keyManagement.createKeyAlias(keyId);
             // then
@@ -64,7 +77,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
     describe('getKeyAlias', () => {
         it('should return the current key and schema', () => {
             // given
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             const result = keyManagement.getKeyAlias();
             // then
@@ -83,7 +96,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({ KeyMetadata: { KeyId: keyId } });
                 }
             }));
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             await keyManagement.createCustomerKey();
             // then
@@ -103,7 +116,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({ KeyMetadata: { KeyId: keyId } });
                 }
             }));
-            const keyManagement = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             const result = await keyManagement.createCustomerKey();
             // then
@@ -117,7 +130,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve(null);
                 }
             }));
-            const keyManagement = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             try {
                 await keyManagement.createCustomerKey();
@@ -140,7 +153,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({ KeyMetadata: { KeyId: keyId } });
                 }
             }));
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             await keyManagement.findExistingCustomerKey();
             // then
@@ -156,7 +169,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve({ KeyMetadata: { KeyId: keyId } });
                 }
             }));
-            const keyManagement = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             const result = await keyManagement.findExistingCustomerKey();
             // then
@@ -170,7 +183,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                     return Promise.resolve(null);
                 }
             }));
-            const keyManagement = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             try {
                 await keyManagement.findExistingCustomerKey();
@@ -195,7 +208,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
             // given
             const keyId: string = '65775675685746456';
             const accountId: string = '45456756456';
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             await keyManagement.setKeyPolicy(keyId, accountId, tenantId);
             // then
@@ -213,50 +226,6 @@ describe('KeyManagementRepositoryAWSImpl', () => {
                             },
                             "Action": "kms:*",
                             "Resource": "*"
-                        },
-                        {
-                            "Sid": "Allow access for Key Administrators",
-                            "Effect": "Allow",
-                            "Principal": {
-                                "AWS": `arn:aws:iam::${accountId}:role/iqbot-key-admin`
-                            },
-                            "Action": [
-                                "kms:Describe*",
-                                "kms:Put*",
-                                "kms:Create*",
-                                "kms:Update*",
-                                "kms:Enable*",
-                                "kms:Revoke*",
-                                "kms:List*",
-                                "kms:Disable*",
-                                "kms:Get*",
-                                "kms:Delete*",
-                                "kms:ScheduleKeyDeletion",
-                                "kms:CancelKeyDeletion"
-                            ],
-                            "Resource": "*"
-                        },
-                        {
-                            "Sid": "Allow use of the key",
-                            "Effect": "Deny",
-                            "Principal": {
-                                "AWS": `arn:aws:iam::${accountId}:role/iqbot-app`
-                            },
-                            "Action": [
-                                "kms:Create*",
-                                "kms:PutKeyPolicy",
-                                "kms:DescribeKey",
-                                "kms:GenerateDataKey*",
-                                "kms:Encrypt",
-                                "kms:ReEncrypt*",
-                                "kms:Decrypt"
-                            ],
-                            "Resource": "*",
-                            "Condition": {
-                                "StringNotEquals": {
-                                    "ec2:ResourceTag/tenantId": `${tenantId}`
-                                }
-                            }
                         }
                     ]
                 }),
@@ -281,7 +250,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
         it('should call KMS to generate a data key from the CMK', async () => {
             // given
             const keyAlias: string = '65775675685746456';
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             await keyManagement.createDataKey(keyAlias);
             // then
@@ -310,7 +279,7 @@ describe('KeyManagementRepositoryAWSImpl', () => {
 
         it('should call KMS to decrypt an encrypted data key', async () => {
             // given
-            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(tenantId);
+            const keyManagement: KeyManagementRepositoryAWSImpl = new KeyManagementRepositoryAWSImpl(configService, tenantId);
             // when
             await keyManagement.decryptDataKey(keyAlias, encryptedDataKey);
             // then

@@ -1,6 +1,7 @@
 import { HttpService, HttpModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import AuthTokenException from '../../../../domain/authentication/expectations/AuthTokenException/AuthToken.exception';
 
@@ -9,17 +10,22 @@ describe('Service: AuthService', () => {
     const token = '9876887867867678768678678';
     let decodeToken;
     let http: HttpService;
+    let configService: ConfigService;
 
     beforeEach(async () => {
         decodeToken = jest.spyOn(JwtService.prototype, 'decode');
 
         const moduleRef = await Test.createTestingModule({
-            imports: [HttpModule],
+            imports: [
+                ConfigModule,
+                HttpModule
+            ],
             controllers: [],
             providers: [],
         }).compile();
     
         http = moduleRef.get<HttpService>(HttpService);
+        configService = moduleRef.get<ConfigService>(ConfigService);
     });
 
     afterEach(() => {
@@ -32,7 +38,7 @@ describe('Service: AuthService', () => {
 
         it('should throw AuthenticationException if the authentication fails', async () => {
             // given
-            const authService: AuthService = new AuthService(http);
+            const authService: AuthService = new AuthService(http, configService);
             // when
             try {
                 await authService.authenticateByToken(tenantId, token);
@@ -51,7 +57,7 @@ describe('Service: AuthService', () => {
                 tenantUuid: '455768577564645645'
             };
             decodeToken.mockReturnValue(tokenContent);
-            const authService: AuthService = new AuthService(http);
+            const authService: AuthService = new AuthService(http, configService);
             // when
             const result = authService.getContentFromAuthToken(token);
             // then
@@ -62,7 +68,7 @@ describe('Service: AuthService', () => {
             // given
             const tokenContent = {};
             decodeToken.mockReturnValue(tokenContent);
-            const authService: AuthService = new AuthService(http);
+            const authService: AuthService = new AuthService(http, configService);
             // when
             // then
             expect(() => authService.getContentFromAuthToken(token)).toThrow(AuthTokenException);

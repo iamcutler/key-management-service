@@ -7,10 +7,12 @@ import { AllExceptionsFilter } from './exceptions/all-exceptions/all-exceptions.
 import { AuthTokenExceptionFilter } from './domain/authentication/expectations/AuthTokenException/AuthToken.exception.filter';
 import BadRequestExceptionFilter from './exceptions/BadRequest/BadRequest.filter';
 import NotFoundExceptionFilter from './exceptions/NotFound/NotFound.filter';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const { httpAdapter } = app.get(HttpAdapterHost);
+  const configService = new ConfigService();
 
   app.use(jsonResponse);
   app.useGlobalFilters(
@@ -30,6 +32,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(configService.get<string>('PORT') || 3000);
 }
 bootstrap();

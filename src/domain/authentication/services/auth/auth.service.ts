@@ -2,10 +2,14 @@ import { Injectable, HttpService } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import AuthTokenException from '../../expectations/AuthTokenException/AuthToken.exception';
 import AuthenticationException from '../../expectations/Authentication/Authentication.exception';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-    constructor(private readonly http: HttpService) {}
+    constructor(
+        private readonly http: HttpService,
+        private readonly configService: ConfigService
+    ) {}
 
     /**
      * Authenticate a user by token
@@ -15,7 +19,7 @@ export class AuthService {
      */
     async authenticateByToken(tenantId: string, token: string) {
         try {
-            return await this.http.get(`${process.env.CONTROL_ROOM_URL}/v1/usermanagement/users/self`, {
+            return await this.http.get(`${this.configService.get<string>('CONTROL_ROOM_URL')}/v1/usermanagement/users/self`, {
                 headers: {
                     'x-authorization': token,
                 }

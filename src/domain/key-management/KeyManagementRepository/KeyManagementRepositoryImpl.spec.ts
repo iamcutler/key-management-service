@@ -1,3 +1,5 @@
+import { Test } from '@nestjs/testing';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import KeyManagementRepositoryImpl from './KeyManagementRepositoryImpl';
 import KeyManagementRepositoryAWSImpl from './KeyManagementRepositoryAWSImpl';
 import { KeyManagementProvider } from '../KeyManagementProvider';
@@ -7,6 +9,17 @@ jest.mock('./KeyManagementRepositoryAWSImpl');
 describe('KeyManagementRepositoryImpl', () => {
     // given
     const tenantId = '567567756756645456456';
+    let configService: ConfigService;
+
+    beforeEach(async () => {
+        await Test.createTestingModule({
+            controllers: [],
+            providers: [],
+            imports: [
+                ConfigModule.forRoot()
+            ]
+          }).compile();
+    });
 
     afterEach(() => {
         jest.clearAllMocks();
@@ -21,7 +34,7 @@ describe('KeyManagementRepositoryImpl', () => {
             // given
             // when
             // then
-            expect(KeyManagementRepositoryAWSImpl).toHaveBeenCalledWith(tenantId);
+            expect(KeyManagementRepositoryAWSImpl).toHaveBeenCalledWith(new ConfigService, tenantId);
         });
 
         describe('createKeyAlias', () => {

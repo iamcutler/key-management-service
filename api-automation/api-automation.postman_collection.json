@@ -1,13 +1,12 @@
 {
 	"info": {
-		"_postman_id": "56fd0248-41ff-4cde-bb73-35e254d95f79",
+		"_postman_id": "ebaac585-d86c-47a3-adaf-4dd76f88f177",
 		"name": "Key Management Service",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "Health",
-			"description": "",
 			"item": [
 				{
 					"name": "GET: Health",
@@ -16,17 +15,19 @@
 							"listen": "test",
 							"script": {
 								"id": "4e781fc3-d35e-4830-a3de-b7034fc34204",
-								"type": "text/javascript",
 								"exec": [
+									"const jsonResponse = pm.response.json();",
+									"",
 									"pm.test('should return a status code of 200', () => {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test('should return OK in the body', () => {",
-									"    pm.expect(pm.response.text()).to.include(\"OK\");",
+									"pm.test('should return OK in the body status', () => {",
+									"    pm.expect(jsonResponse.status).to.include(\"ok\");",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -39,7 +40,6 @@
 								"disabled": true
 							}
 						],
-						"body": {},
 						"url": {
 							"raw": "{{protocol}}://{{host}}/health",
 							"protocol": "{{protocol}}",
@@ -54,11 +54,11 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Authentication",
-			"description": "",
 			"item": [
 				{
 					"name": "User Authentication",
@@ -67,13 +67,29 @@
 							"listen": "test",
 							"script": {
 								"id": "fa161cbe-3cb5-49d1-9b24-51d8e993b878",
-								"type": "text/javascript",
 								"exec": [
 									"const jsonData = pm.response.json();",
 									"",
 									"postman.setEnvironmentVariable(\"token\", jsonData.token);",
 									""
-								]
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e025c7c1-7fdd-45c1-8df1-02cd5a206d7d",
+								"exec": [
+									"const enable_cr_auth = pm.environment.get('enable_cr_auth');",
+									"",
+									"// disable this call if Control Room authentication is disabled",
+									"if (enable_cr_auth === true) {",
+									"    postman.setNextRequest('Create new KMS CMK key');",
+									"}",
+									""
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -107,15 +123,14 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Create a customer master key",
-			"description": "",
 			"item": [
 				{
 					"name": "AWS",
-					"description": "",
 					"item": [
 						{
 							"name": "Create new KMS CMK key",
@@ -124,7 +139,6 @@
 									"listen": "test",
 									"script": {
 										"id": "a0c43adf-ee06-4ed7-815c-bd9da11aad59",
-										"type": "text/javascript",
 										"exec": [
 											"const responseData = pm.response.json();",
 											"",
@@ -146,7 +160,8 @@
 											"    pm.response.to.have.jsonBody('statusCode', 200);",
 											"});",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -162,7 +177,6 @@
 										"value": "{{token}}"
 									}
 								],
-								"body": {},
 								"url": {
 									"raw": "{{protocol}}://{{host}}/customer-keys",
 									"protocol": "{{protocol}}",
@@ -177,6 +191,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -215,7 +230,6 @@
 								"disabled": true
 							}
 						],
-						"body": {},
 						"url": {
 							"raw": "{{protocol}}://{{host}}/customer-keys",
 							"protocol": "{{protocol}}",
@@ -236,7 +250,6 @@
 							"listen": "test",
 							"script": {
 								"id": "46b14088-9ef3-489e-b7fc-e5463b2f3c84",
-								"type": "text/javascript",
 								"exec": [
 									"const responseData = pm.response.json();",
 									"",
@@ -251,11 +264,12 @@
 									"    pm.response.to.have.jsonBody('success', false);",
 									"    pm.response.to.have.jsonBody('statusCode', 400);",
 									"    pm.response.to.have.jsonBody('errors', [",
-									"        'No authorization token was present'",
+									"        'No authorization token or tenant was present'",
 									"    ]);",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -267,7 +281,6 @@
 								"value": "AWS"
 							}
 						],
-						"body": {},
 						"url": {
 							"raw": "{{protocol}}://{{host}}/customer-keys",
 							"protocol": "{{protocol}}",
@@ -303,15 +316,14 @@
 						]
 					}
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Create customer data key",
-			"description": "",
 			"item": [
 				{
 					"name": "AWS",
-					"description": "",
 					"item": [
 						{
 							"name": "Create new customer data key",
@@ -359,7 +371,6 @@
 										"value": "{{token}}"
 									}
 								],
-								"body": {},
 								"url": {
 									"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys",
 									"protocol": "{{protocol}}",
@@ -376,6 +387,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -385,7 +397,6 @@
 							"listen": "test",
 							"script": {
 								"id": "46b14088-9ef3-489e-b7fc-e5463b2f3c84",
-								"type": "text/javascript",
 								"exec": [
 									"const responseData = pm.response.json();",
 									"",
@@ -400,11 +411,12 @@
 									"    pm.response.to.have.jsonBody('success', false);",
 									"    pm.response.to.have.jsonBody('statusCode', 400);",
 									"    pm.response.to.have.jsonBody('errors', [",
-									"        'No authorization token was present'",
+									"        'No authorization token or tenant was present'",
 									"    ]);",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -416,7 +428,6 @@
 								"value": "AWS"
 							}
 						],
-						"body": {},
 						"url": {
 							"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys",
 							"protocol": "{{protocol}}",
@@ -468,7 +479,6 @@
 								"disabled": true
 							}
 						],
-						"body": {},
 						"url": {
 							"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys",
 							"protocol": "{{protocol}}",
@@ -484,15 +494,14 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Decrypt customer data key",
-			"description": "",
 			"item": [
 				{
 					"name": "AWS",
-					"description": "",
 					"item": [
 						{
 							"name": "Decrypt customer data key",
@@ -561,11 +570,11 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
 					"name": "validations",
-					"description": "",
 					"item": [
 						{
 							"name": "should return bad request if encrypted data key is not provided",
@@ -633,6 +642,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -642,7 +652,6 @@
 							"listen": "test",
 							"script": {
 								"id": "46b14088-9ef3-489e-b7fc-e5463b2f3c84",
-								"type": "text/javascript",
 								"exec": [
 									"const responseData = pm.response.json();",
 									"",
@@ -657,11 +666,12 @@
 									"    pm.response.to.have.jsonBody('success', false);",
 									"    pm.response.to.have.jsonBody('statusCode', 400);",
 									"    pm.response.to.have.jsonBody('errors', [",
-									"        'No authorization token was present'",
+									"        'No authorization token or tenant was present'",
 									"    ]);",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -673,7 +683,6 @@
 								"value": "AWS"
 							}
 						],
-						"body": {},
 						"url": {
 							"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys/decrypt",
 							"protocol": "{{protocol}}",
@@ -726,7 +735,6 @@
 								"disabled": true
 							}
 						],
-						"body": {},
 						"url": {
 							"raw": "{{protocol}}://{{host}}/customer-keys/{{currentKeyId}}/data-keys/decrypt",
 							"protocol": "{{protocol}}",
@@ -743,7 +751,9 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }

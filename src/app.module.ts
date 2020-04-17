@@ -1,5 +1,6 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TerminusModule } from '@nestjs/terminus';
 import { jsonResponse } from './middleware/jsonresponse.middleware';
 // controllers
 import HealthController from './interfaces/health/health.controller';
@@ -9,9 +10,10 @@ import KeyManagementModule from './domain/key-management/key-management.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
     AuthModule,
+    ConfigModule.forRoot(),
     KeyManagementModule,
+    TerminusModule,
   ],
   controllers: [
     HealthController,

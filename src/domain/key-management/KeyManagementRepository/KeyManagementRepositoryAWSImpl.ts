@@ -5,6 +5,7 @@ import CustomerKeyNotFoundException from '../exceptions/CustomerKeyNotFound/Cust
 import { GetCallerIdentityResponse } from 'aws-sdk/clients/sts';
 import DataKey from '../../models/key-management/DataKey';
 import { GenerateDataKeyResponse } from 'aws-sdk/clients/kms';
+import { ConfigService } from '@nestjs/config';
 
 export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepository {
     tenantId: string;
@@ -13,12 +14,20 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
     /**
      * @constructor
      */
-    constructor(tenantId: string) {
+    constructor(
+        private readonly configService: ConfigService,
+        tenantId: string
+    ) {
         this.tenantId = tenantId;
         this.keyStore = new KMS({
-            region: process.env.AWS_REGION,
-            accessKeyId: '',
-            secretAccessKey: '',
+            region: this.configService.get<string>('AWS_REGION'),
+            // use access keys if present
+            ...(
+                this.configService.get<string>('AWS_ACCESS_KEY_ID') && this.configService.get<string>('AWS_SECRET_ACCESS_KEY') ? {
+                    accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
+                    secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY')
+                } : {}
+            )
         });
     }
 
@@ -150,50 +159,6 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
                         },
                         "Action": "kms:*",
                         "Resource": "*"
-                    },
-                    {
-                        "Sid": "Allow access for Key Administrators",
-                        "Effect": "Allow",
-                        "Principal": {
-                            "AWS": `arn:aws:iam::${accountId}:role/iqbot-key-admin`
-                        },
-                        "Action": [
-                            "kms:Describe*",
-                            "kms:Put*",
-                            "kms:Create*",
-                            "kms:Update*",
-                            "kms:Enable*",
-                            "kms:Revoke*",
-                            "kms:List*",
-                            "kms:Disable*",
-                            "kms:Get*",
-                            "kms:Delete*",
-                            "kms:ScheduleKeyDeletion",
-                            "kms:CancelKeyDeletion"
-                        ],
-                        "Resource": "*"
-                    },
-                    {
-                        "Sid": "Allow use of the key",
-                        "Effect": "Deny",
-                        "Principal": {
-                            "AWS": `arn:aws:iam::${accountId}:role/iqbot-app`
-                        },
-                        "Action": [
-                            "kms:Create*",
-                            "kms:PutKeyPolicy",
-                            "kms:DescribeKey",
-                            "kms:GenerateDataKey*",
-                            "kms:Encrypt",
-                            "kms:ReEncrypt*",
-                            "kms:Decrypt"
-                        ],
-                        "Resource": "*",
-                        "Condition": {
-                            "StringNotEquals": {
-                                "ec2:ResourceTag/tenantId": `${tenantId}`
-                            }
-                        }
                     }
                 ]
             }),
@@ -209,8 +174,13 @@ export default class KeyManagementRepositoryAWSImpl implements KeyManagementRepo
      */
     private async getUserIdentity(): Promise<GetCallerIdentityResponse> {
         const sts: STS = new STS({
-            accessKeyId: '',
-            secretAccessKey: ''
+            // use access keys if present
+            ...(
+                this.configService.get<string>('AWS_ACCESS_KEY_ID') && this.configService.get<string>('AWS_SECRET_ACCESS_KEY') ? {
+                    accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
+                    secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY')
+                } : {}
+            )
         });
 
         return await sts.getCallerIdentity().promise();

@@ -4,9 +4,11 @@ import { AuthorizationMiddleware } from './middleware/authorization.middleware';
 import CustomerKeyManagementController from '../../interfaces/customerKeyManagement/customerKeyManagement.controller';
 import DataKeyManagementController from '../../interfaces/DataKeyManagement/DataKeyManagement.controller';
 import { AuthService } from './services/auth/auth.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
     imports: [
+        ConfigModule,
         HttpModule,
         JwtModule.register({ secret: 'hard!to-guess_secret' })
     ],
