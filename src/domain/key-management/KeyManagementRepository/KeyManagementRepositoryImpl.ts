@@ -5,6 +5,7 @@ import KeyManagementRepositoryAWSImpl from './KeyManagementRepositoryAWSImpl';
 import { KeyManagementProvider } from '../KeyManagementProvider';
 import KeyManagementProviderException from '../exceptions/KeyManagementProvider/KeyManagementProvider.exception';
 import DataKey from '../../../domain/models/key-management/DataKey';
+import { ConfigService } from '@nestjs/config';
 
 export default class KeyManagementRepositoryImpl implements KeyManagementRepository {
     tenantId: string;
@@ -20,7 +21,7 @@ export default class KeyManagementRepositoryImpl implements KeyManagementReposit
 
         // AWS Key Management Service
         if (keyStore === KeyManagementProvider.AWS) {
-            this.keyStore = new KeyManagementRepositoryAWSImpl(tenantId);
+            this.keyStore = new KeyManagementRepositoryAWSImpl(new ConfigService, tenantId);
         }
         else {
             throw new KeyManagementProviderException(`No cloud provider was present for customer: ${this.tenantId}`);

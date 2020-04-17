@@ -3,7 +3,7 @@ declare namespace Express {
         // current tenant identifer
         tenantId: string;
         // Authentication JWT token
-        token: any;
+        token?: any;
     }
 
     export interface Response {
