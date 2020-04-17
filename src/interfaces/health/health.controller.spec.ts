@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { request, response } from 'express';
+import { TerminusModule } from '@nestjs/terminus';
 import HealthController from './health.controller';
 
 describe('Controller: Health', () => {
@@ -7,7 +7,12 @@ describe('Controller: Health', () => {
 
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
-            controllers: [HealthController],
+            imports: [
+                TerminusModule
+            ],
+            controllers: [
+                HealthController
+            ],
             providers: [],
         }).compile();
     
@@ -18,14 +23,18 @@ describe('Controller: Health', () => {
         jest.clearAllMocks();
     });
 
-    describe('getHealth', () => {
+    describe('check', () => {
         it('should return a OK status', async () => {
             // given
-            jest.spyOn(response, 'send').mockReturnThis();
             // when
-            healthController.getHealth(request, response)
+            const result = await healthController.check();
             // then
-            expect(response.send).toHaveBeenCalledWith('OK');
+            expect(result).toEqual({
+                details: {},
+                error: {},
+                info: {},
+                status: 'ok'
+            });
         });
     });
 });
