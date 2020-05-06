@@ -5,6 +5,8 @@ This service is used to handle envelope encryption within the platform. This ser
 ### Environment Variables
 - PORT (Desired port for the application to run on. Default is 3000)
 - AWS_REGION
+- AWS_ACCESS_KEY_ID (Optional)
+- AWS_SECRET_ACCESS_KEY (Optional)
 
 ##### Local development:
 Copy the .env.sample file to a new .env file and set the required environment variables
