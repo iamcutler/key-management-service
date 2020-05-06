@@ -1,6 +1,6 @@
 # Key Management Service
 
-This service is used to handle envolope encryption within the platform. This service can generate Customer Master Keys (CMK) and Data Keys for encryption and decryption of data.
+This service is used to handle envelope encryption within the platform. This service can generate Customer Master Keys (CMK) and Data Keys for encryption and decryption of data.
 
 ### Environment Variables
 - PORT (Desired port for the application to run on. Default is 3000)
