@@ -8,7 +8,7 @@ import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
 @Controller('/customer-keys')
 @ApiTags('CMK')
-@ApiHeader({ name: 'authorization', description: 'JWT authentication token or tenantId if CR Automation is disabled' })
+@ApiHeader({ name: 'authorization', description: 'JWT authentication token or tenantId' })
 @ApiHeader({ name: 'provider', description: 'Key Management Provider (e.g. AWS)' })
 export default class CustomerKeyManagementController {
     /**

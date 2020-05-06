@@ -19,7 +19,7 @@ export class AuthService {
      */
     async authenticateByToken(tenantId: string, token: string) {
         try {
-            return await this.http.get(`${this.configService.get<string>('CONTROL_ROOM_URL')}/v1/usermanagement/users/self`, {
+            return await this.http.get('/v1/usermanagement/users/self', {
                 headers: {
                     'x-authorization': token,
                 }

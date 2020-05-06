@@ -3,10 +3,8 @@
 This service is used to handle envolope encryption within the platform. This service can generate Customer Master Keys (CMK) and Data Keys for encryption and decryption of data.
 
 ### Environment Variables
-- CONTROL_ROOM_URL (URL to Control Room for authentication)
 - PORT (Desired port for the application to run on. Default is 3000)
 - AWS_REGION
-- ENABLE_CR_AUTHENTICATION (Enable Control Room authentication by JWT token. If disabled, the authentication header will be a tenantId directly)
 
 ##### Local development:
 Copy the .env.sample file to a new .env file and set the required environment variables
